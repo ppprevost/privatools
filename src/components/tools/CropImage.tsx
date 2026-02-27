@@ -1,21 +1,20 @@
-import { useState, useCallback, useEffect } from 'react';
-import Cropper from 'react-easy-crop';
-import type { Area } from 'react-easy-crop';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
-import Slider from '@/components/ui/Slider';
 import { useWorker } from '@/hooks/useWorker';
 import { fireConfetti } from '@/lib/confetti';
 
 export default function CropImage() {
   const [file, setFile] = useState<File | null>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const worker = useWorker({
     createWorker: () =>
@@ -30,21 +29,37 @@ export default function CropImage() {
     const f = files[0];
     setFile(f);
     worker.reset();
-    setZoom(1);
-    setCrop({ x: 0, y: 0 });
-    setCroppedAreaPixels(null);
+    setCrop(undefined);
+    setCompletedCrop(undefined);
     setImgUrl(URL.createObjectURL(f));
   }, [worker]);
 
-  const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
-    setCroppedAreaPixels(areaPixels);
+  const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    const size = Math.min(naturalWidth, naturalHeight) * 0.8;
+    const x = (naturalWidth - size) / 2;
+    const y = (naturalHeight - size) / 2;
+    const initial: Crop = { unit: 'px', x, y, width: size, height: size };
+    setCrop(initial);
   }, []);
 
   const handleCrop = useCallback(async () => {
-    if (!file || !croppedAreaPixels) return;
+    if (!file || !completedCrop || !imgRef.current) return;
+
+    const img = imgRef.current;
+    const scaleX = img.naturalWidth / img.width;
+    const scaleY = img.naturalHeight / img.height;
+
+    const pixelCrop = {
+      x: Math.round(completedCrop.x * scaleX),
+      y: Math.round(completedCrop.y * scaleY),
+      width: Math.round(completedCrop.width * scaleX),
+      height: Math.round(completedCrop.height * scaleY),
+    };
+
     const buffer = await file.arrayBuffer();
-    worker.process(buffer, { ...croppedAreaPixels, type: file.type }, file.name);
-  }, [file, croppedAreaPixels, worker]);
+    worker.process(buffer, { ...pixelCrop, type: file.type }, file.name);
+  }, [file, completedCrop, worker]);
 
   const resultBlob = worker.result ? new Blob([worker.result.data], { type: file?.type ?? 'image/jpeg' }) : null;
 
@@ -57,19 +72,20 @@ export default function CropImage() {
           <FileCard file={file} onRemove={() => { setFile(null); worker.reset(); setImgUrl(null); }} />
 
           {imgUrl && !resultBlob && (
-            <div className="space-y-4">
-              <div className="relative h-[400px] rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
-                <Cropper
-                  image={imgUrl}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={undefined}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
+            <div className="rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
+              <ReactCrop
+                crop={crop}
+                onChange={setCrop}
+                onComplete={setCompletedCrop}
+              >
+                <img
+                  ref={imgRef}
+                  src={imgUrl}
+                  alt="Preview"
+                  onLoad={onImageLoad}
+                  className="max-w-full max-h-[500px] mx-auto block"
                 />
-              </div>
-              <Slider label="Zoom" value={zoom} min={1} max={3} step={0.1} unit="x" onChange={setZoom} />
+              </ReactCrop>
             </div>
           )}
 
