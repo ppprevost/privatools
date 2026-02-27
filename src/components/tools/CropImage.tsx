@@ -72,18 +72,19 @@ export default function CropImage() {
           <FileCard file={file} onRemove={() => { setFile(null); worker.reset(); setImgUrl(null); }} />
 
           {imgUrl && !resultBlob && (
-            <div className="rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
+            <div className="flex justify-center rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
               <ReactCrop
                 crop={crop}
                 onChange={setCrop}
                 onComplete={setCompletedCrop}
+                className="max-h-[500px]"
               >
                 <img
                   ref={imgRef}
                   src={imgUrl}
                   alt="Preview"
                   onLoad={onImageLoad}
-                  className="max-w-full max-h-[500px] mx-auto block"
+                  className="max-h-[500px] block"
                 />
               </ReactCrop>
             </div>
