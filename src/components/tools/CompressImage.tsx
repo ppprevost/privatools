@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
 import Slider from '@/components/ui/Slider';
+import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
 import { useWorker } from '@/hooks/useWorker';
 import { fireConfetti } from '@/lib/confetti';
 
@@ -32,6 +33,8 @@ export default function CompressImage() {
   }, [worker.result]);
 
   const resultBlob = worker.result ? new Blob([worker.result.data], { type: file?.type ?? 'image/jpeg' }) : null;
+  const beforeUrl = useMemo(() => file ? URL.createObjectURL(file) : null, [file]);
+  const afterUrl = useMemo(() => resultBlob ? URL.createObjectURL(resultBlob) : null, [resultBlob]);
 
   return (
     <div className="space-y-6">
@@ -64,10 +67,13 @@ export default function CompressImage() {
             </div>
           )}
 
-          {resultBlob && (
-            <div className="flex justify-center">
-              <DownloadButton blob={resultBlob} filename={worker.result!.filename} />
-            </div>
+          {resultBlob && beforeUrl && afterUrl && (
+            <>
+              <BeforeAfterSlider beforeSrc={beforeUrl} afterSrc={afterUrl} />
+              <div className="flex justify-center">
+                <DownloadButton blob={resultBlob} filename={worker.result!.filename} />
+              </div>
+            </>
           )}
         </>
       )}
