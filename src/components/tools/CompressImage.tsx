@@ -1,40 +1,80 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
-import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
-import Button from '@/components/ui/Button';
 import Slider from '@/components/ui/Slider';
 import BeforeAfterSlider from '@/components/ui/BeforeAfterSlider';
-import { useWorker } from '@/hooks/useWorker';
 import { fireConfetti } from '@/lib/confetti';
 
 export default function CompressImage() {
   const [file, setFile] = useState<File | null>(null);
   const [quality, setQuality] = useState(80);
-  const worker = useWorker({
-    createWorker: () =>
-      new Worker(new URL('../../lib/workers/compress-image.worker.ts', import.meta.url), { type: 'module' }),
-  });
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+  const [beforeUrl, setBeforeUrl] = useState<string | null>(null);
+  const [afterUrl, setAfterUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState('');
+  const hasFiredConfetti = useRef(false);
+  const workerRef = useRef<Worker | null>(null);
 
   const handleFiles = useCallback((files: File[]) => {
     setFile(files[0]);
-    worker.reset();
-  }, [worker]);
+    setResultBlob(null);
+    setAfterUrl(null);
+    hasFiredConfetti.current = false;
+    setBeforeUrl(URL.createObjectURL(files[0]));
+  }, []);
 
-  const handleCompress = useCallback(async () => {
-    if (!file) return;
-    const buffer = await file.arrayBuffer();
-    worker.process(buffer, { quality: quality / 100, type: file.type }, file.name);
-  }, [file, quality, worker]);
+  const compress = useCallback(async (f: File, q: number) => {
+    workerRef.current?.terminate();
+
+    const worker = new Worker(
+      new URL('../../lib/workers/compress-image.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+    workerRef.current = worker;
+
+    const buffer = await f.arrayBuffer();
+
+    worker.onmessage = (e) => {
+      const msg = e.data;
+      if (msg.type === 'result') {
+        const blob = new Blob([msg.result], { type: f.type || 'image/jpeg' });
+        setResultBlob(blob);
+        setResultFilename(msg.filename ?? f.name);
+        setAfterUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(blob);
+        });
+        if (!hasFiredConfetti.current) {
+          hasFiredConfetti.current = true;
+          fireConfetti();
+        }
+        worker.terminate();
+      }
+    };
+
+    worker.postMessage({ data: buffer, options: { quality: q / 100, type: f.type }, filename: f.name }, [buffer]);
+  }, []);
 
   useEffect(() => {
-    if (worker.result) fireConfetti();
-  }, [worker.result]);
+    if (!file) return;
+    const timeout = setTimeout(() => compress(file, quality), 300);
+    return () => clearTimeout(timeout);
+  }, [file, quality, compress]);
 
-  const resultBlob = worker.result ? new Blob([worker.result.data], { type: file?.type ?? 'image/jpeg' }) : null;
-  const beforeUrl = useMemo(() => file ? URL.createObjectURL(file) : null, [file]);
-  const afterUrl = useMemo(() => resultBlob ? URL.createObjectURL(resultBlob) : null, [resultBlob]);
+  useEffect(() => {
+    return () => workerRef.current?.terminate();
+  }, []);
+
+  const handleRemove = useCallback(() => {
+    setFile(null);
+    setResultBlob(null);
+    if (beforeUrl) URL.revokeObjectURL(beforeUrl);
+    if (afterUrl) URL.revokeObjectURL(afterUrl);
+    setBeforeUrl(null);
+    setAfterUrl(null);
+    workerRef.current?.terminate();
+  }, [beforeUrl, afterUrl]);
 
   return (
     <div className="space-y-6">
@@ -44,36 +84,20 @@ export default function CompressImage() {
         <>
           <FileCard
             file={file}
-            onRemove={() => { setFile(null); worker.reset(); }}
+            onRemove={handleRemove}
             resultSize={resultBlob?.size}
           />
 
-          {!worker.isProcessing && !resultBlob && (
-            <Slider label="Quality" value={quality} min={10} max={100} step={5} unit="%" onChange={setQuality} />
+          <Slider label="Quality" value={quality} min={10} max={100} step={5} unit="%" onChange={setQuality} />
+
+          {beforeUrl && afterUrl && (
+            <BeforeAfterSlider beforeSrc={beforeUrl} afterSrc={afterUrl} />
           )}
 
-          {worker.isProcessing && (
-            <div className="space-y-2">
-              <ProgressBar value={worker.progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">Compressing...</p>
-            </div>
-          )}
-
-          {worker.error && <p className="text-sm text-rose-600 font-bold text-center">{worker.error}</p>}
-
-          {!worker.isProcessing && !resultBlob && (
+          {resultBlob && (
             <div className="flex justify-center">
-              <Button onClick={handleCompress} size="lg">Compress Image</Button>
+              <DownloadButton blob={resultBlob} filename={resultFilename} />
             </div>
-          )}
-
-          {resultBlob && beforeUrl && afterUrl && (
-            <>
-              <BeforeAfterSlider beforeSrc={beforeUrl} afterSrc={afterUrl} />
-              <div className="flex justify-center">
-                <DownloadButton blob={resultBlob} filename={worker.result!.filename} />
-              </div>
-            </>
           )}
         </>
       )}
