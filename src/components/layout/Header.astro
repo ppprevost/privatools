@@ -1,0 +1,54 @@
+---
+const pdfLinks = [
+  { href: '/compress-pdf', label: 'Compress PDF' },
+  { href: '/merge-pdf', label: 'Merge PDF' },
+  { href: '/split-pdf', label: 'Split PDF' },
+  { href: '/jpg-to-pdf', label: 'JPG to PDF' },
+];
+
+const imageLinks = [
+  { href: '/compress-image', label: 'Compress Image' },
+  { href: '/resize-image', label: 'Resize Image' },
+  { href: '/convert-to-jpg', label: 'Convert to JPG' },
+  { href: '/crop-image', label: 'Crop Image' },
+  { href: '/remove-background', label: 'Remove BG' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b-[3px] border-slate-900">
+  <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-indigo-500 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] flex items-center justify-center">
+        <span class="text-white font-black text-sm">P</span>
+      </div>
+      <span class="font-black text-xl text-slate-900 tracking-tight">PrivaTools</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-8">
+      <div class="relative group">
+        <button class="font-bold text-slate-700 hover:text-indigo-600 transition-colors">PDF</button>
+        <div class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+          <div class="bg-white rounded-xl border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-md)] p-3 min-w-[200px]">
+            {pdfLinks.map(link => (
+              <a href={link.href} class="block px-4 py-2 rounded-lg font-medium text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="relative group">
+        <button class="font-bold text-slate-700 hover:text-indigo-600 transition-colors">Image</button>
+        <div class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+          <div class="bg-white rounded-xl border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-md)] p-3 min-w-[200px]">
+            {imageLinks.map(link => (
+              <a href={link.href} class="block px-4 py-2 rounded-lg font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

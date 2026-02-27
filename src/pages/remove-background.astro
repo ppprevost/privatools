@@ -1,0 +1,8 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import RemoveBackground from '../components/tools/RemoveBackground';
+---
+
+<ToolLayout title="Remove Background" description="Automatically remove the background from any image using AI. The model runs entirely in your browser.">
+  <RemoveBackground client:idle />
+</ToolLayout>
