@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   FileDown, Combine, Scissors, FileImage, ImageDown,
   Scaling, FileType, Crop, Eraser, type LucideIcon,
@@ -30,10 +31,18 @@ interface ToolCardProps {
 export default function ToolCard({ tool }: ToolCardProps) {
   const Icon = iconMap[tool.icon] ?? FileDown;
   const colors = categoryColors[tool.category];
+  const preloaded = useRef(false);
+
+  const handleMouseEnter = () => {
+    if (tool.slug !== 'remove-background' || preloaded.current) return;
+    preloaded.current = true;
+    import('@imgly/background-removal').then((m) => m.preload());
+  };
 
   return (
     <a
       href={`/${tool.slug}`}
+      onMouseEnter={handleMouseEnter}
       className={cn(
         'block p-6 rounded-2xl border-[3px] border-slate-900 transition-all duration-200 hover:-translate-y-1',
         colors.bg,

@@ -19,6 +19,11 @@ const { title, description } = Astro.props;
   </head>
   <body class="bg-[var(--color-bg-base)] min-h-screen antialiased">
     <slot />
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
   </body>
 </html>
 

@@ -52,3 +52,12 @@ const imageLinks = [
     </div>
   </nav>
 </header>
+
+<script>
+  let preloaded = false;
+  document.querySelector('a[href="/remove-background"]')?.addEventListener('mouseenter', () => {
+    if (preloaded) return;
+    preloaded = true;
+    import('@imgly/background-removal').then((m) => m.preload());
+  }, { once: true });
+</script>
