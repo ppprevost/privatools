@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
 import { useWorker } from '@/hooks/useWorker';
+import { fireConfetti } from '@/lib/confetti';
 
 export default function JpgToPdf() {
   const [files, setFiles] = useState<File[]>([]);
@@ -27,6 +28,10 @@ export default function JpgToPdf() {
     const buffers = await Promise.all(files.map((f) => f.arrayBuffer()));
     worker.process(new ArrayBuffer(0), { files: buffers, names: files.map((f) => f.name) }, files[0].name);
   }, [files, worker]);
+
+  useEffect(() => {
+    if (worker.result) fireConfetti();
+  }, [worker.result]);
 
   const resultBlob = worker.result ? new Blob([worker.result.data], { type: 'application/pdf' }) : null;
 

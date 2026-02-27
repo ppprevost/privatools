@@ -1,41 +1,50 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import Cropper from 'react-easy-crop';
+import type { Area } from 'react-easy-crop';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
+import Slider from '@/components/ui/Slider';
 import { useWorker } from '@/hooks/useWorker';
+import { fireConfetti } from '@/lib/confetti';
 
 export default function CropImage() {
   const [file, setFile] = useState<File | null>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [imgSize, setImgSize] = useState({ w: 0, h: 0 });
-  const [crop, setCrop] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const worker = useWorker({
     createWorker: () =>
       new Worker(new URL('../../lib/workers/crop-image.worker.ts', import.meta.url), { type: 'module' }),
   });
 
+  useEffect(() => {
+    if (worker.result) fireConfetti();
+  }, [worker.result]);
+
   const handleFiles = useCallback((files: File[]) => {
     const f = files[0];
     setFile(f);
     worker.reset();
-    const url = URL.createObjectURL(f);
-    setImgUrl(url);
-    const img = new Image();
-    img.onload = () => {
-      setImgSize({ w: img.naturalWidth, h: img.naturalHeight });
-      setCrop({ x: 0, y: 0, width: img.naturalWidth, height: img.naturalHeight });
-    };
-    img.src = url;
+    setZoom(1);
+    setCrop({ x: 0, y: 0 });
+    setCroppedAreaPixels(null);
+    setImgUrl(URL.createObjectURL(f));
   }, [worker]);
 
+  const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
+    setCroppedAreaPixels(areaPixels);
+  }, []);
+
   const handleCrop = useCallback(async () => {
-    if (!file) return;
+    if (!file || !croppedAreaPixels) return;
     const buffer = await file.arrayBuffer();
-    worker.process(buffer, { ...crop, type: file.type }, file.name);
-  }, [file, crop, worker]);
+    worker.process(buffer, { ...croppedAreaPixels, type: file.type }, file.name);
+  }, [file, croppedAreaPixels, worker]);
 
   const resultBlob = worker.result ? new Blob([worker.result.data], { type: file?.type ?? 'image/jpeg' }) : null;
 
@@ -49,35 +58,18 @@ export default function CropImage() {
 
           {imgUrl && !resultBlob && (
             <div className="space-y-4">
-              <div className="rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
-                <img src={imgUrl} alt="Preview" className="max-w-full max-h-[400px] mx-auto" />
+              <div className="relative h-[400px] rounded-xl border-[3px] border-slate-900 overflow-hidden bg-slate-100">
+                <Cropper
+                  image={imgUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={undefined}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-sm font-bold text-slate-700">X</label>
-                  <input type="number" value={crop.x} min={0} max={imgSize.w}
-                    onChange={(e) => setCrop((c) => ({ ...c, x: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-4 py-3 rounded-xl border-[3px] border-slate-900 font-medium focus:outline-none focus:border-indigo-500" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-bold text-slate-700">Y</label>
-                  <input type="number" value={crop.y} min={0} max={imgSize.h}
-                    onChange={(e) => setCrop((c) => ({ ...c, y: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-4 py-3 rounded-xl border-[3px] border-slate-900 font-medium focus:outline-none focus:border-indigo-500" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-bold text-slate-700">Width</label>
-                  <input type="number" value={crop.width} min={1} max={imgSize.w}
-                    onChange={(e) => setCrop((c) => ({ ...c, width: parseInt(e.target.value) || 1 }))}
-                    className="w-full px-4 py-3 rounded-xl border-[3px] border-slate-900 font-medium focus:outline-none focus:border-indigo-500" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-bold text-slate-700">Height</label>
-                  <input type="number" value={crop.height} min={1} max={imgSize.h}
-                    onChange={(e) => setCrop((c) => ({ ...c, height: parseInt(e.target.value) || 1 }))}
-                    className="w-full px-4 py-3 rounded-xl border-[3px] border-slate-900 font-medium focus:outline-none focus:border-indigo-500" />
-                </div>
-              </div>
+              <Slider label="Zoom" value={zoom} min={1} max={3} step={0.1} unit="x" onChange={setZoom} />
             </div>
           )}
 

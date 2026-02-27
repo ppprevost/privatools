@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Button from '@/components/ui/Button';
 import { Download } from 'lucide-react';
+import { fireConfetti } from '@/lib/confetti';
 
 interface SplitResult {
   filename: string;
@@ -42,6 +43,7 @@ export default function SplitPdf() {
         setResults(msg.result);
         setIsProcessing(false);
         setProgress(100);
+        fireConfetti();
         worker.terminate();
       } else if (msg.type === 'error') {
         setError(msg.error);

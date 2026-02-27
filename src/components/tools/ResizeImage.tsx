@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
 import { useWorker } from '@/hooks/useWorker';
+import { fireConfetti } from '@/lib/confetti';
 
 export default function ResizeImage() {
   const [file, setFile] = useState<File | null>(null);
@@ -34,6 +35,10 @@ export default function ResizeImage() {
     const buffer = await file.arrayBuffer();
     worker.process(buffer, { width, height, maintainAspectRatio: maintainAspect, type: file.type }, file.name);
   }, [file, width, height, maintainAspect, worker]);
+
+  useEffect(() => {
+    if (worker.result) fireConfetti();
+  }, [worker.result]);
 
   const resultBlob = worker.result ? new Blob([worker.result.data], { type: file?.type ?? 'image/jpeg' }) : null;
 

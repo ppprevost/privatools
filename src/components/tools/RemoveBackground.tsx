@@ -1,11 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
+import { fireConfetti } from '@/lib/confetti';
 
 export default function RemoveBackground() {
+  useEffect(() => {
+    import('@imgly/background-removal').then((m) => m.preload());
+  }, []);
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -39,6 +43,7 @@ export default function RemoveBackground() {
 
       setProgress(100);
       setResultBlob(blob);
+      fireConfetti();
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
     } catch (err) {
