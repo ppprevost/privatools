@@ -14,7 +14,7 @@ const shareTargets = [
   { name: 'LinkedIn', icon: LinkedInIcon, buildUrl: (url: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
 ] as const;
 
-export default function DownloadButton({ blob, filename }: DownloadButtonProps) {
+export default function DownloadButton({ blob, filename }: Readonly<DownloadButtonProps>) {
   const [showMenu, setShowMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

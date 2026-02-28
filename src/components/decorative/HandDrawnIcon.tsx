@@ -5,7 +5,7 @@ interface HandDrawnIconProps {
   type: 'pdf' | 'img';
 }
 
-export default function HandDrawnIcon({ type }: HandDrawnIconProps) {
+export default function HandDrawnIcon({ type }: Readonly<HandDrawnIconProps>) {
   return (
     <div
       className={cn(

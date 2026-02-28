@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useWorker, type WorkerMessage } from './useWorker';
+import { useWorker } from './useWorker';
 
 interface UseFileProcessorOptions {
   createWorker: () => Worker;

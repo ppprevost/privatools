@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
+import { requireDatabaseUrl, requireOrigin, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
 
 const MAX_NAME = 200;
 const MAX_EMAIL = 320;
@@ -22,23 +23,16 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-const ALLOWED_ORIGINS = ['https://privatools.com', 'http://localhost:4321'];
-
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  const origin = request.headers.get('Origin');
-  if (!origin || !ALLOWED_ORIGINS.some((o) => origin.startsWith(o))) {
-    return new Response(JSON.stringify({ error: 'Forbidden.' }), {
-      status: 403,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  const dbGuard = requireDatabaseUrl();
+  if (dbGuard) return dbGuard;
 
-  const ip = clientAddress || request.headers.get('x-forwarded-for') || 'unknown';
+  const originGuard = requireOrigin(request);
+  if (originGuard) return originGuard;
+
+  const ip = getClientIp(clientAddress, request);
   if (isRateLimited(ip)) {
-    return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
-      status: 429,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('Too many requests. Please try again later.', 429);
   }
 
   try {
@@ -46,39 +40,24 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const { name, email, message } = body;
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      return new Response(JSON.stringify({ error: 'All fields are required.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonError('All fields are required.');
     }
 
     if (name.trim().length > MAX_NAME || email.trim().length > MAX_EMAIL || message.trim().length > MAX_MESSAGE) {
-      return new Response(JSON.stringify({ error: 'Input too long.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonError('Input too long.');
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // eslint-disable-line sonarjs/slow-regex
     if (!emailRegex.test(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email address.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return jsonError('Invalid email address.');
     }
 
-    const sql = neon(process.env.DATABASE_URL!);
+    const sql = neon(process.env.DATABASE_URL ?? '');
     await sql`INSERT INTO contacts (name, email, message) VALUES (${name.trim()}, ${email.trim()}, ${message.trim()})`;
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ success: true });
   } catch (e) {
     console.error('Contact form error:', (e as Error).message);
-    return new Response(JSON.stringify({ error: 'Something went wrong. Please try again.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('Something went wrong. Please try again.', 500);
   }
 };

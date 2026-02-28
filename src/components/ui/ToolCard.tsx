@@ -28,7 +28,7 @@ interface ToolCardProps {
   tool: ToolConfig;
 }
 
-export default function ToolCard({ tool }: ToolCardProps) {
+export default function ToolCard({ tool }: Readonly<ToolCardProps>) {
   const Icon = iconMap[tool.icon] ?? FileDown;
   const colors = categoryColors[tool.category];
   const preloaded = useRef(false);

@@ -5,7 +5,7 @@ interface BeforeAfterSliderProps {
   afterSrc: string;
 }
 
-export default function BeforeAfterSlider({ beforeSrc, afterSrc }: BeforeAfterSliderProps) {
+export default function BeforeAfterSlider({ beforeSrc, afterSrc }: Readonly<BeforeAfterSliderProps>) {
   const [position, setPosition] = useState(50);
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
@@ -11,7 +11,7 @@ export default function ContactForm() {
   const [state, setState] = useState<FormState>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setState('sending');
     setErrorMsg('');

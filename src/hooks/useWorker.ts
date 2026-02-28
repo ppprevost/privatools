@@ -39,7 +39,7 @@ export function useWorker({ createWorker }: UseWorkerOptions) {
         if (msg.type === 'progress') {
           setProgress(msg.progress ?? 0);
         } else if (msg.type === 'result') {
-          setResult({ data: msg.result!, filename: msg.filename ?? filename });
+          setResult({ data: msg.result ?? new ArrayBuffer(0), filename: msg.filename ?? filename });
           setIsProcessing(false);
           setProgress(100);
           worker.terminate();

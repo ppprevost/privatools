@@ -14,24 +14,25 @@ const blogDir = join(import.meta.dirname, '..', 'src', 'content', 'blog');
 function randomDate(): string {
   const start = new Date('2025-11-01').getTime();
   const end = new Date('2026-02-27').getTime();
-  const d = new Date(start + Math.random() * (end - start));
+  const d = new Date(start + Math.random() * (end - start)); // eslint-disable-line sonarjs/pseudo-random
   return d.toISOString().split('T')[0];
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function parseFrontmatter(raw: string) {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(raw);
   if (!match) throw new Error('Invalid frontmatter');
 
   const fm = match[1];
   const content = match[2].trim();
 
   const get = (key: string): string => {
-    const m = fm.match(new RegExp(`^${key}:\\s*"?([^"\\n]*)"?`, 'm'));
+    const m = new RegExp(`^${key}:\\s*"?([^"\\n]*)"?`, 'm').exec(fm);
     return m ? m[1].trim() : '';
   };
 
   let relatedTools: string[] = [];
-  const inlineMatch = fm.match(/relatedTools:\s*\[([^\]]*)\]/);
+  const inlineMatch = /relatedTools:\s*\[([^\]]*)\]/.exec(fm);
   if (inlineMatch) {
     relatedTools = inlineMatch[1]
       .split(',')
@@ -41,12 +42,12 @@ function parseFrontmatter(raw: string) {
     const lines = fm.split('\n');
     let collecting = false;
     for (const line of lines) {
-      if (line.match(/^relatedTools:/)) {
+      if (/^relatedTools:/.exec(line)) {
         collecting = true;
         continue;
       }
       if (collecting) {
-        const item = line.match(/^\s+-\s+(.+)/);
+        const item = /^\s+-\s+(.+)/.exec(line);
         if (item) {
           relatedTools.push(item[1].trim());
         } else {

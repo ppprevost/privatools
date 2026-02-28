@@ -11,7 +11,7 @@ interface DropZoneProps {
   compact?: boolean;
 }
 
-export default function DropZone({ accept, multiple = false, onFiles, compact = false }: DropZoneProps) {
+export default function DropZone({ accept, multiple = false, onFiles, compact = false }: Readonly<DropZoneProps>) {
   const [isDragging, setIsDragging] = useState(false);
   const [sizeError, setSizeError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

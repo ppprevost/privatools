@@ -11,7 +11,8 @@ export async function convertToJpg(
   onProgress?.(40);
 
   const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get canvas context');
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, bitmap.width, bitmap.height);
   ctx.drawImage(bitmap, 0, 0);
