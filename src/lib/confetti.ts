@@ -1,6 +1,5 @@
-import confetti from 'canvas-confetti';
-
-export function fireConfetti() {
+export async function fireConfetti() {
+  const { default: confetti } = await import('canvas-confetti');
   confetti({
     particleCount: 120,
     spread: 80,

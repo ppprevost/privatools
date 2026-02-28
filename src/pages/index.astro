@@ -16,8 +16,8 @@ import { ShieldCheck, Zap, Shield, DollarSign } from 'lucide-react';
   <section class="relative min-h-[85vh] w-full overflow-hidden">
     <div class="absolute inset-0 z-0">
       <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
-      <DecorativeBlob color="#6366f1" className="top-[10%] -left-[10%] w-[500px] h-[500px]" client:load />
-      <DecorativeBlob color="#ec4899" className="bottom-[10%] -right-[10%] w-[600px] h-[600px]" client:load />
+      <DecorativeBlob color="#6366f1" className="top-[10%] -left-[10%] w-[500px] h-[500px]" client:visible />
+      <DecorativeBlob color="#ec4899" className="bottom-[10%] -right-[10%] w-[600px] h-[600px]" client:visible />
     </div>
 
     <div class="relative z-10 flex items-center justify-center min-h-[85vh] px-6 py-16">
@@ -34,12 +34,12 @@ import { ShieldCheck, Zap, Shield, DollarSign } from 'lucide-react';
           Compress, merge, convert. <br class="hidden md:block" />
           <span class="relative inline-block">
             Your files stay
-            <WavyUnderline client:load />
+            <WavyUnderline client:visible />
           </span>{' '}
           in your browser.
         </h1>
 
-        <HeroDropZone client:load />
+        <HeroDropZone client:visible />
 
         <div class="flex items-center justify-center">
           <div class="flex items-center gap-4 px-10 py-5 bg-emerald-50 border-2 border-emerald-500 rounded-2xl text-emerald-800">
