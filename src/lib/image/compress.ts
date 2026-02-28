@@ -1,3 +1,5 @@
+import UPNG from 'upng-js';
+
 export async function compressImage(
   data: ArrayBuffer,
   type: string,
@@ -5,6 +7,17 @@ export async function compressImage(
   onProgress?: (p: number) => void
 ): Promise<Blob> {
   onProgress?.(10);
+
+  if (type === 'image/png') {
+    const img = UPNG.decode(data);
+    onProgress?.(30);
+    const rgba = UPNG.toRGBA8(img);
+    onProgress?.(60);
+    const colors = Math.max(8, Math.round(quality * 256));
+    const result = UPNG.encode(rgba, img.width, img.height, colors);
+    onProgress?.(100);
+    return new Blob([result], { type: 'image/png' });
+  }
 
   const blob = new Blob([data], { type });
   const bitmap = await createImageBitmap(blob);
@@ -17,10 +30,9 @@ export async function compressImage(
 
   onProgress?.(60);
 
-  const outputType = type === 'image/png' ? 'image/png' : 'image/jpeg';
   const result = await canvas.convertToBlob({
-    type: outputType,
-    quality: outputType === 'image/jpeg' ? quality : undefined,
+    type: 'image/jpeg',
+    quality,
   });
 
   onProgress?.(100);

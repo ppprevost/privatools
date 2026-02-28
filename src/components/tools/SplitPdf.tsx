@@ -3,7 +3,7 @@ import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Button from '@/components/ui/Button';
-import { Download } from 'lucide-react';
+import { Download, CheckCircle } from 'lucide-react';
 import { fireConfetti } from '@/lib/confetti';
 
 interface SplitResult {
@@ -102,7 +102,10 @@ export default function SplitPdf() {
 
           {results.length > 0 && (
             <div className="space-y-3">
-              <p className="text-sm font-bold text-slate-700">{results.length} files created:</p>
+              <div className="flex items-center justify-center gap-2 text-emerald-600">
+                <CheckCircle size={20} />
+                <p className="text-sm font-bold">Done! {results.length} files ready to download.</p>
+              </div>
               {results.map((result, i) => (
                 <button
                   key={i}
