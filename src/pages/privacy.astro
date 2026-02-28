@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<BaseLayout title="Privacy Policy - PrivaTools" description="PrivaTools collects zero data. No cookies, no analytics, no file uploads. GDPR compliant by design.">
+  <Header />
+  <main class="max-w-3xl mx-auto px-6 py-12 md:py-20">
+    <div class="text-center mb-14">
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Privacy Policy</h1>
+      <p class="text-lg text-slate-500 mt-3">Zero data collection. Zero cookies. GDPR compliant by design.</p>
+    </div>
+
+    <div class="space-y-10 text-slate-600 font-medium leading-relaxed">
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">The short version</h2>
+        <p>PrivaTools does not collect, store, or process any personal data. Your files never leave your browser. There is nothing to opt out of because we never collect anything in the first place.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">File processing</h2>
+        <p>All file processing (compression, conversion, merging, splitting, resizing, background removal) happens entirely in your browser using WebAssembly and JavaScript. Your files are never uploaded to any server. No temporary copies are created on our infrastructure. Once you close the browser tab, any processed files in memory are released.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Cookies</h2>
+        <p>PrivaTools does not use cookies. No session cookies, no tracking cookies, no third-party cookies. None.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Analytics and tracking</h2>
+        <p>PrivaTools does not use Google Analytics, Facebook Pixel, or any other tracking service. We do not track page views, clicks, or user behavior. There are no analytics scripts on this website.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Third-party services</h2>
+        <p>PrivaTools does not embed third-party scripts, ads, or social media widgets. The background removal tool downloads an AI model from a CDN on first use. This is the only external network request made by the tools. The model is cached locally by your browser for subsequent uses.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">GDPR compliance</h2>
+        <p>PrivaTools is GDPR compliant by design. Since we collect no personal data, there is no data to access, rectify, or delete. No consent banner is needed because no data processing occurs on our end.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Contact</h2>
+        <p>If you have questions about this privacy policy, <a href="/contact" class="text-indigo-600 font-bold hover:text-indigo-800 transition-colors">contact us</a>.</p>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

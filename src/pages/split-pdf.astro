@@ -1,8 +1,57 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import SplitPdf from '../components/tools/SplitPdf';
+
+const faqItems = [
+  { question: 'Can I extract specific pages from a PDF?', answer: 'Yes. Enter page numbers or ranges like "1-3, 5, 8-10" and each range will be saved as a separate PDF file.' },
+  { question: 'What happens if I leave the page range empty?', answer: 'Every page will be extracted into its own individual PDF file.' },
+];
 ---
 
-<ToolLayout title="Split PDF" description="Extract pages from a PDF into separate files. Specify page ranges or split every page.">
+<ToolLayout
+  title="Split PDF Online Free - Extract Pages | PrivaTools"
+  heading="Split PDF"
+  description="Extract specific pages from a PDF or split every page into separate files. Free, no upload required."
+  relatedSlugs={['compress-pdf', 'merge-pdf', 'jpg-to-pdf']}
+  faqItems={faqItems}
+  toolSlug="split-pdf"
+>
   <SplitPdf client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Split a PDF</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Upload your PDF file.</li>
+        <li>Enter page ranges (e.g. 1-3, 5, 8-10) or leave empty to split every page.</li>
+        <li>Click "Split PDF" and download the resulting files.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Why Split PDFs with PrivaTools?</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">Flexible Page Ranges</h3>
+          <p class="text-slate-600">Extract specific pages, page ranges, or split every page into individual files. Full control over what you extract.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">Privacy First</h3>
+          <p class="text-slate-600">Your PDF is processed entirely in your browser. No server upload, no cloud storage, no data retention.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>

@@ -1,8 +1,44 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import ConvertToJpg from '../components/tools/ConvertToJpg';
+
+const faqItems = [
+  { question: 'Why convert to JPG?', answer: 'JPG is the most widely supported image format. It works everywhere: email attachments, web uploads, printing services, and social media platforms.' },
+  { question: 'Will I lose transparency when converting PNG to JPG?', answer: 'Yes. JPG does not support transparency. Transparent areas will be filled with a white background.' },
+  { question: 'Can I convert HEIC photos from my iPhone?', answer: 'Yes. HEIC is the default photo format on iPhones. Upload your HEIC files and convert them to JPG for universal compatibility.' },
+];
 ---
 
-<ToolLayout title="Convert to JPG" description="Convert PNG, WebP, HEIC, or other image formats to JPG. Zero upload required.">
+<ToolLayout
+  title="Convert to JPG Online Free - PNG, WebP, HEIC to JPG | PrivaTools"
+  heading="Convert to JPG"
+  description="Convert PNG, WebP, HEIC, BMP, or GIF images to JPG format. Adjustable quality. Free, no upload, 100% private."
+  relatedSlugs={['compress-image', 'resize-image', 'jpg-to-pdf']}
+  faqItems={faqItems}
+  toolSlug="convert-to-jpg"
+>
   <ConvertToJpg client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Convert Images to JPG</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Upload your image (PNG, WebP, HEIC, BMP, or GIF).</li>
+        <li>Adjust the JPG quality slider if needed.</li>
+        <li>Click "Convert to JPG" and download the result.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>

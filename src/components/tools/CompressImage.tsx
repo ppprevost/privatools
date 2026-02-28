@@ -17,12 +17,14 @@ export default function CompressImage() {
   const workerRef = useRef<Worker | null>(null);
 
   const handleFiles = useCallback((files: File[]) => {
+    if (beforeUrl) URL.revokeObjectURL(beforeUrl);
+    if (afterUrl) URL.revokeObjectURL(afterUrl);
     setFile(files[0]);
     setResultBlob(null);
     setAfterUrl(null);
     hasFiredConfetti.current = false;
     setBeforeUrl(URL.createObjectURL(files[0]));
-  }, []);
+  }, [beforeUrl, afterUrl]);
 
   const compress = useCallback(async (f: File, q: number) => {
     workerRef.current?.terminate();

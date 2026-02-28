@@ -10,14 +10,14 @@ import { pdfTools, imageTools } from '../lib/tools-config';
 import { ShieldCheck, Zap, Shield, DollarSign } from 'lucide-react';
 ---
 
-<BaseLayout title="PrivaTools" description="Free online PDF and image tools. Your files never leave your browser.">
+<BaseLayout title="PrivaTools - Free Online PDF & Image Tools | 100% Private" description="Free online PDF and image tools. Compress, merge, split PDFs. Compress, resize, crop images. Remove backgrounds with AI. Everything runs in your browser, your files never leave your device.">
   <Header />
 
   <section class="relative min-h-[85vh] w-full overflow-hidden">
     <div class="absolute inset-0 z-0">
       <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
-      <DecorativeBlob color="#6366f1" className="top-[10%] -left-[10%] w-[500px] h-[500px]" client:visible />
-      <DecorativeBlob color="#ec4899" className="bottom-[10%] -right-[10%] w-[600px] h-[600px]" client:visible />
+      <DecorativeBlob color="#6366f1" className="top-[10%] -left-[10%] w-[500px] h-[500px]" client:load />
+      <DecorativeBlob color="#ec4899" className="bottom-[10%] -right-[10%] w-[600px] h-[600px]" client:load />
     </div>
 
     <div class="relative z-10 flex items-center justify-center min-h-[85vh] px-6 py-16">
@@ -102,4 +102,11 @@ import { ShieldCheck, Zap, Shield, DollarSign } from 'lucide-react';
   </section>
 
   <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "PrivaTools",
+    "url": "https://privatools.com",
+    "description": "Free online PDF and image tools with 100% client-side processing. Your files never leave your browser."
+  })} />
 </BaseLayout>

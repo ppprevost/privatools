@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<BaseLayout title="About - PrivaTools" description="PrivaTools is a free suite of PDF and image tools that process everything in your browser. No uploads, no tracking, no accounts.">
+  <Header />
+  <main class="max-w-3xl mx-auto px-6 py-12 md:py-20">
+    <div class="text-center mb-14">
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">About PrivaTools</h1>
+      <p class="text-lg text-slate-500 mt-3">Free PDF & image tools that respect your privacy.</p>
+    </div>
+
+    <div class="space-y-10 text-slate-600 font-medium leading-relaxed">
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">What is PrivaTools?</h2>
+        <p>PrivaTools is a collection of free online tools for working with PDFs and images. Compress PDFs, merge documents, resize images, remove backgrounds, and more. Every tool runs entirely in your browser using WebAssembly and JavaScript.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">How it works</h2>
+        <p class="mb-4">Unlike most online tools, PrivaTools never uploads your files to a server. Here's what happens when you use a tool:</p>
+        <ol class="list-decimal list-inside space-y-2">
+          <li>You select a file from your device.</li>
+          <li>The file is processed locally in your browser using WebAssembly.</li>
+          <li>You download the result directly. No server is involved.</li>
+        </ol>
+        <p class="mt-4">This means your files stay on your device at all times. There is no upload, no cloud processing, no temporary storage. Your data never leaves your browser.</p>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">Why client-side processing?</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-bold text-slate-900 mb-1">Privacy by design</h3>
+            <p>Your files are never exposed to a third-party server. Confidential documents, personal photos, sensitive contracts: they all stay private.</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 mb-1">No accounts, no limits</h3>
+            <p>No sign-up required. No daily limits. No premium upsells. Every tool is free and unlimited.</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 mb-1">Works offline</h3>
+            <p>Once the page loads, you can use the tools without an internet connection. Everything runs locally.</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 mb-1">Fast processing</h3>
+            <p>No waiting for file uploads and downloads. Processing starts instantly on your device.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-black text-slate-900 mb-4">No tracking</h2>
+        <p>PrivaTools does not use cookies, analytics trackers, or any form of user tracking. There are no ads, no affiliate links, no data collection. We believe tools should just work without compromising your privacy.</p>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -31,8 +31,9 @@ export default function CropImage() {
     worker.reset();
     setCrop(undefined);
     setCompletedCrop(undefined);
+    if (imgUrl) URL.revokeObjectURL(imgUrl);
     setImgUrl(URL.createObjectURL(f));
-  }, [worker]);
+  }, [worker, imgUrl]);
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { naturalWidth, naturalHeight } = e.currentTarget;

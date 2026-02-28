@@ -2,13 +2,53 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import ToolCard from '../components/ui/ToolCard';
+import { tools } from '../lib/tools-config';
+import { buildFaqSchema } from '../lib/schema';
+import { getCollection } from 'astro:content';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
 
 interface Props {
   title: string;
+  heading: string;
   description: string;
+  relatedSlugs?: string[];
+  faqItems?: FaqItem[];
+  toolSlug?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, heading, description, relatedSlugs = [], faqItems = [], toolSlug } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": heading,
+  "url": canonicalURL.href,
+  "description": description,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "browserRequirements": "Requires JavaScript and WebAssembly support"
+};
+
+const faqSchema = faqItems.length > 0 ? buildFaqSchema(faqItems) : null;
+
+const relatedTools = relatedSlugs.map((s) => tools[s]).filter(Boolean);
+
+let relatedPosts: { id: string; data: { title: string; description: string } }[] = [];
+if (toolSlug) {
+  const allPosts = await getCollection('blog');
+  relatedPosts = allPosts.filter((p) => p.data.relatedTools.includes(toolSlug)).slice(0, 3);
+}
 ---
 
 <BaseLayout title={title} description={description}>
@@ -19,10 +59,39 @@ const { title, description } = Astro.props;
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
         100% Local Processing
       </div>
-      <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{title}</h1>
+      <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{heading}</h1>
       <p class="text-lg text-slate-500 mt-3 max-w-2xl mx-auto">{description}</p>
     </div>
     <slot />
+
+    <slot name="seo-content" />
+
+    {relatedTools.length > 0 && (
+      <section class="mt-16">
+        <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Related Tools</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {relatedTools.map(tool => (
+            <ToolCard tool={tool} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {relatedPosts.length > 0 && (
+      <section class="mt-16">
+        <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Related Articles</h2>
+        <div class="grid gap-4">
+          {relatedPosts.map((post) => (
+            <a href={`/blog/${post.id}`} class="block bg-white rounded-2xl border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)] p-5 hover:shadow-[var(--shadow-brutalist-md)] hover:-translate-y-0.5 transition-all">
+              <h3 class="font-black text-slate-900">{post.data.title}</h3>
+              <p class="text-slate-500 text-sm mt-1">{post.data.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </main>
   <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 </BaseLayout>

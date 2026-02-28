@@ -1,0 +1,59 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import ToolCard from '../components/ui/ToolCard';
+import { tools } from '../lib/tools-config';
+import { buildArticleSchema } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  date: string;
+  relatedTools: string[];
+  ogImage?: string;
+}
+
+const { title, description, date, relatedTools: relatedSlugs, ogImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const articleSchema = buildArticleSchema({
+  title,
+  description,
+  url: canonicalURL.href,
+  datePublished: date,
+});
+
+const relatedTools = relatedSlugs.map((s) => tools[s]).filter(Boolean);
+---
+
+<BaseLayout title={`${title} | PrivaTools Blog`} description={description} ogImage={ogImage}>
+  <Header />
+  <main class="max-w-3xl mx-auto px-6 py-12 md:py-20">
+    <article>
+      <header class="mb-10">
+        <a href="/blog" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors mb-4 inline-block">&larr; Back to Blog</a>
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{title}</h1>
+        <p class="text-slate-500 mt-3">{description}</p>
+        <time datetime={date} class="text-sm text-slate-400 mt-2 block">{new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+      </header>
+
+      <div class="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-a:text-indigo-600 prose-a:font-semibold hover:prose-a:text-indigo-800">
+        <slot />
+      </div>
+    </article>
+
+    {relatedTools.length > 0 && (
+      <section class="mt-16 pt-10 border-t-2 border-slate-200">
+        <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Try These Tools</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {relatedTools.map(tool => (
+            <ToolCard tool={tool} />
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+</BaseLayout>

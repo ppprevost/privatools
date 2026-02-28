@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<BaseLayout title="Page Not Found - PrivaTools" description="The page you're looking for doesn't exist.">
+  <Header />
+  <main class="max-w-2xl mx-auto px-6 py-24 text-center">
+    <h1 class="text-6xl font-black text-slate-900 mb-4">404</h1>
+    <p class="text-xl text-slate-500 font-medium mb-8">This page doesn't exist.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="/" class="px-6 py-3 bg-indigo-500 text-white rounded-2xl font-bold border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)] hover:-translate-y-0.5 transition-transform">
+        Back to Home
+      </a>
+      <a href="/compress-pdf" class="px-6 py-3 bg-white text-slate-900 rounded-2xl font-bold border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)] hover:-translate-y-0.5 transition-transform">
+        Compress a PDF
+      </a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

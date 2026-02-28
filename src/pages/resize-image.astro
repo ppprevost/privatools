@@ -1,8 +1,45 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import ResizeImage from '../components/tools/ResizeImage';
+
+const faqItems = [
+  { question: 'Can I resize without losing quality?', answer: 'Downscaling (making smaller) preserves quality well. Upscaling (making larger) may introduce some blurriness since new pixels must be interpolated.' },
+  { question: 'What does "maintain aspect ratio" mean?', answer: 'It keeps the proportions of your image. When you change the width, the height adjusts automatically (and vice versa) to prevent stretching.' },
+  { question: 'Is my image uploaded anywhere?', answer: 'No. Resizing happens entirely in your browser. Your image never leaves your device.' },
+];
 ---
 
-<ToolLayout title="Resize Image" description="Change the dimensions of your images instantly. Supports aspect ratio lock.">
+<ToolLayout
+  title="Resize Image Online Free - Change Dimensions | PrivaTools"
+  heading="Resize Image"
+  description="Change image dimensions instantly with aspect ratio lock. Supports JPG, PNG, and WebP. Free, no upload required."
+  relatedSlugs={['compress-image', 'crop-image', 'convert-to-jpg']}
+  faqItems={faqItems}
+  toolSlug="resize-image"
+>
   <ResizeImage client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Resize an Image</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Upload your image (JPG, PNG, or WebP).</li>
+        <li>Enter the desired width and height in pixels.</li>
+        <li>Toggle "Maintain aspect ratio" to prevent distortion.</li>
+        <li>Click "Resize Image" and download the result.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>

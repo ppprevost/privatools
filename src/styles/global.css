@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-bg-base: #FAFAFF;
@@ -34,4 +35,11 @@
 
   --radius-card: 2.5rem;
   --radius-button: 1rem;
+
+  --animate-blob: blob 10s ease-in-out infinite;
+}
+
+@keyframes blob {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(10deg); }
 }

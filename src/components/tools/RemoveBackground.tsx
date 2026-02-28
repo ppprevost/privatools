@@ -18,11 +18,12 @@ export default function RemoveBackground() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleFiles = useCallback((files: File[]) => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(files[0]);
     setResultBlob(null);
     setError(null);
     setPreviewUrl(URL.createObjectURL(files[0]));
-  }, []);
+  }, [previewUrl]);
 
   const handleRemove = useCallback(async () => {
     if (!file) return;

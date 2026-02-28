@@ -1,8 +1,60 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import CompressImage from '../components/tools/CompressImage';
+
+const faqItems = [
+  { question: 'How does image compression work?', answer: 'For PNG files, we reduce the color palette (quantization). For JPG and WebP, we use lossy compression that removes visual data the human eye barely notices. Both methods significantly reduce file size.' },
+  { question: 'Will my compressed image look different?', answer: 'At quality levels above 70%, the difference is usually imperceptible. Use the before/after slider to check before downloading.' },
+  { question: 'Is there a file size limit?', answer: 'You can compress images up to 200 MB. Since processing happens in your browser, larger images may take a moment on slower devices.' },
+  { question: 'Does the quality slider work for PNG files?', answer: 'Yes. For PNGs, the slider controls the number of colors in the output palette. Lower quality means fewer colors and a smaller file.' },
+];
 ---
 
-<ToolLayout title="Compress Image" description="Reduce image file size while preserving visual quality. Adjust compression level to your needs.">
+<ToolLayout
+  title="Compress Image Online Free - Reduce File Size | PrivaTools"
+  heading="Compress Image"
+  description="Compress JPG, PNG, and WebP images with adjustable quality. Real-time before/after preview. Free, no upload, 100% private."
+  relatedSlugs={['resize-image', 'convert-to-jpg', 'crop-image']}
+  faqItems={faqItems}
+  toolSlug="compress-image"
+>
   <CompressImage client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Compress an Image</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Drop your image file (JPG, PNG, or WebP) in the box above.</li>
+        <li>Adjust the quality slider to find the right balance between size and quality.</li>
+        <li>The before/after preview updates in real time so you can compare.</li>
+        <li>Download your compressed image when you're happy with the result.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Smart Compression by Format</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">PNG Compression</h3>
+          <p class="text-slate-600">Uses color quantization (similar to TinyPNG) to reduce PNG file size by up to 90% while keeping transparency. The quality slider controls the number of colors in the palette.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">JPG & WebP Compression</h3>
+          <p class="text-slate-600">Uses lossy compression with adjustable quality. Lower quality means smaller files. The live preview lets you find the sweet spot instantly.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>

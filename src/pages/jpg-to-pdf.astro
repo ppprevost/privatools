@@ -1,8 +1,44 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import JpgToPdf from '../components/tools/JpgToPdf';
+
+const faqItems = [
+  { question: 'Which image formats are supported?', answer: 'JPG, JPEG, PNG, and WebP files can be converted to PDF.' },
+  { question: 'Can I combine multiple images into one PDF?', answer: 'Yes. Upload multiple images and they will all be included in a single PDF document, one image per page.' },
+  { question: 'Are my images uploaded to a server?', answer: 'No. The conversion happens entirely in your browser. Your images never leave your device.' },
+];
 ---
 
-<ToolLayout title="JPG to PDF" description="Convert your JPG, PNG, or WebP images into a PDF document. Fast and private.">
+<ToolLayout
+  title="JPG to PDF Converter Online Free | PrivaTools"
+  heading="JPG to PDF"
+  description="Convert JPG, PNG, or WebP images into a PDF document. Free, fast, and 100% private."
+  relatedSlugs={['compress-pdf', 'merge-pdf', 'compress-image']}
+  faqItems={faqItems}
+  toolSlug="jpg-to-pdf"
+>
   <JpgToPdf client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Convert Images to PDF</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Select one or more JPG, PNG, or WebP images.</li>
+        <li>Click "Convert to PDF".</li>
+        <li>Download your PDF with all images included.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>

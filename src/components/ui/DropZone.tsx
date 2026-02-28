@@ -2,6 +2,8 @@ import { useState, useRef, useCallback, type DragEvent } from 'react';
 import { Upload, MousePointer2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200 MB
+
 interface DropZoneProps {
   accept: string;
   multiple?: boolean;
@@ -11,7 +13,18 @@ interface DropZoneProps {
 
 export default function DropZone({ accept, multiple = false, onFiles, compact = false }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [sizeError, setSizeError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const validateAndEmit = useCallback((files: File[]) => {
+    const oversized = files.find((f) => f.size > MAX_FILE_SIZE);
+    if (oversized) {
+      setSizeError(`File "${oversized.name}" exceeds the 200 MB limit.`);
+      return;
+    }
+    setSizeError(null);
+    onFiles(multiple ? files : [files[0]]);
+  }, [onFiles, multiple]);
 
   const handleDragOver = useCallback((e: DragEvent) => {
     e.preventDefault();
@@ -27,9 +40,9 @@ export default function DropZone({ accept, multiple = false, onFiles, compact = 
       e.preventDefault();
       setIsDragging(false);
       const files = Array.from(e.dataTransfer.files);
-      if (files.length > 0) onFiles(multiple ? files : [files[0]]);
+      if (files.length > 0) validateAndEmit(files);
     },
-    [onFiles, multiple]
+    [validateAndEmit]
   );
 
   const handleClick = useCallback(() => {
@@ -39,10 +52,10 @@ export default function DropZone({ accept, multiple = false, onFiles, compact = 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files ?? []);
-      if (files.length > 0) onFiles(multiple ? files : [files[0]]);
+      if (files.length > 0) validateAndEmit(files);
       e.target.value = '';
     },
-    [onFiles, multiple]
+    [validateAndEmit]
   );
 
   return (
@@ -92,6 +105,9 @@ export default function DropZone({ accept, multiple = false, onFiles, compact = 
           <MousePointer2 size={18} className="group-hover/btn:translate-x-1 transition-transform" />
         </button>
       </div>
+      {sizeError && (
+        <p className="text-sm text-rose-600 font-bold text-center mt-4">{sizeError}</p>
+      )}
       <div
         className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
         style={{

@@ -49,11 +49,50 @@ const imageLinks = [
           </div>
         </div>
       </div>
+      <a href="/blog" class="font-bold text-slate-700 hover:text-indigo-600 transition-colors">Blog</a>
     </div>
+
+    <button
+      id="mobile-menu-toggle"
+      class="md:hidden p-2 rounded-lg border-2 border-slate-900 font-bold text-sm"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      Menu
+    </button>
   </nav>
+
+  <div id="mobile-menu" class="hidden md:hidden border-t-2 border-slate-200 bg-white px-6 pb-6">
+    <div class="pt-4">
+      <p class="font-black text-slate-900 text-sm uppercase tracking-wider mb-2">PDF Tools</p>
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        {pdfLinks.map(link => (
+          <a href={link.href} class="px-3 py-2 rounded-lg font-medium text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors">
+            {link.label}
+          </a>
+        ))}
+      </div>
+      <p class="font-black text-slate-900 text-sm uppercase tracking-wider mb-2">Image Tools</p>
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        {imageLinks.map(link => (
+          <a href={link.href} class="px-3 py-2 rounded-lg font-medium text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-600 transition-colors">
+            {link.label}
+          </a>
+        ))}
+      </div>
+      <a href="/blog" class="block px-3 py-2 rounded-lg font-bold text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Blog</a>
+    </div>
+  </div>
 </header>
 
 <script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
   let preloaded = false;
   document.querySelector('a[href="/remove-background"]')?.addEventListener('mouseenter', () => {
     if (preloaded) return;

@@ -1,8 +1,67 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import CompressPdf from '../components/tools/CompressPdf';
+
+const faqItems = [
+  { question: 'Is it safe to compress my PDF online?', answer: 'Yes. PrivaTools processes everything in your browser. Your file is never uploaded to any server, so there is zero risk of data leakage.' },
+  { question: 'Will compression reduce the quality of my PDF?', answer: 'No. Our compression removes redundant metadata and optimizes the internal PDF structure. The visual content stays untouched.' },
+  { question: 'What is the maximum file size I can compress?', answer: 'You can compress PDFs up to 200 MB. Larger files may cause your browser to slow down depending on your device.' },
+  { question: 'How much smaller will my PDF be?', answer: 'Results vary depending on the PDF content. Documents with embedded images or duplicate fonts typically see 20-70% size reduction.' },
+];
 ---
 
-<ToolLayout title="Compress PDF" description="Reduce the size of your PDF files without losing quality. 100% local, nothing is uploaded.">
+<ToolLayout
+  title="Compress PDF Online Free - Reduce PDF Size | PrivaTools"
+  heading="Compress PDF"
+  description="Reduce PDF file size without losing quality. Free, no upload, 100% browser-based compression."
+  relatedSlugs={['merge-pdf', 'split-pdf', 'jpg-to-pdf']}
+  faqItems={faqItems}
+  toolSlug="compress-pdf"
+>
   <CompressPdf client:load />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Compress a PDF</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Drop your PDF file in the box above or click "Browse" to select it.</li>
+        <li>The compression starts automatically in your browser.</li>
+        <li>Download your compressed PDF. That's it!</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Why Compress PDFs with PrivaTools?</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">100% Private</h3>
+          <p class="text-slate-600">Your PDF never leaves your device. Unlike other tools, we don't upload your files to any server. Processing happens entirely in your browser using WebAssembly.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">No File Size Limit</h3>
+          <p class="text-slate-600">Process PDFs up to 200 MB. No artificial limits, no premium upsells, no account needed.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">Preserves Quality</h3>
+          <p class="text-slate-600">Our compression strips unnecessary metadata and optimizes internal structures while keeping your document visually identical.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">Works Offline</h3>
+          <p class="text-slate-600">Since everything runs locally, you can compress PDFs even without an internet connection after the page loads.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
 </ToolLayout>
