@@ -8,7 +8,7 @@ interface FileCardProps {
   className?: string;
 }
 
-export default function FileCard({ file, onRemove, resultSize, className }: FileCardProps) {
+export default function FileCard({ file, onRemove, resultSize, className }: Readonly<FileCardProps>) {
   const isPdf = file.type === 'application/pdf';
   const compressionPercent =
     resultSize !== undefined && file.size > 0

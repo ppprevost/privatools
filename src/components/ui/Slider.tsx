@@ -21,7 +21,7 @@ export default function Slider({
   unit = '',
   onChange,
   className,
-}: SliderProps) {
+}: Readonly<SliderProps>) {
   return (
     <div className={cn('space-y-2', className)}>
       <div className="flex items-center justify-between">

@@ -16,7 +16,7 @@ export function hasDatabaseUrl(): boolean {
 }
 
 function sql() {
-  return neon(process.env.DATABASE_URL!);
+  return neon(process.env.DATABASE_URL ?? '');
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {

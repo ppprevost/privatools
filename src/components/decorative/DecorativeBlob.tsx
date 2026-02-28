@@ -5,7 +5,7 @@ interface DecorativeBlobProps {
   color: string;
 }
 
-export default function DecorativeBlob({ className, color }: DecorativeBlobProps) {
+export default function DecorativeBlob({ className, color }: Readonly<DecorativeBlobProps>) {
   return (
     <svg
       viewBox="0 0 200 200"

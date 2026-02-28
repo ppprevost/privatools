@@ -15,12 +15,13 @@ export const onRequest = defineMiddleware(async (_ctx, next) => {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' blob:",
+      "script-src 'self' 'unsafe-inline' blob: https://challenges.cloudflare.com",
       "worker-src 'self' blob:",
       "connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com",
       "img-src 'self' blob: data:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
+      "frame-src https://challenges.cloudflare.com",
       "frame-ancestors 'none'",
     ].join('; ')
   );

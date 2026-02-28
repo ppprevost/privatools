@@ -6,7 +6,7 @@ interface ProgressBarProps {
   className?: string;
 }
 
-export default function ProgressBar({ value, className }: ProgressBarProps) {
+export default function ProgressBar({ value, className }: Readonly<ProgressBarProps>) {
   return (
     <Progress.Root
       className={cn(

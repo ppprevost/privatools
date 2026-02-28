@@ -24,7 +24,8 @@ export async function compressImage(
   onProgress?.(30);
 
   const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get canvas context');
   ctx.drawImage(bitmap, 0, 0);
   bitmap.close();
 

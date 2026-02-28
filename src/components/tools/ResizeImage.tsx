@@ -101,7 +101,7 @@ export default function ResizeImage() {
 
           {resultBlob && (
             <div className="flex justify-center">
-              <DownloadButton blob={resultBlob} filename={worker.result!.filename} />
+              <DownloadButton blob={resultBlob} filename={worker.result?.filename ?? ''} />
             </div>
           )}
         </>
