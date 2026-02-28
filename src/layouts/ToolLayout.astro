@@ -3,9 +3,12 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import ToolCard from '../components/ui/ToolCard';
+import CommentSection from '../components/ui/CommentSection';
 import { tools } from '../lib/tools-config';
 import { buildFaqSchema } from '../lib/schema';
-import { getCollection } from 'astro:content';
+import { getPostsByTool, hasDatabaseUrl } from '../lib/blog';
+
+const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY ?? '';
 
 interface FaqItem {
   question: string;
@@ -44,10 +47,9 @@ const faqSchema = faqItems.length > 0 ? buildFaqSchema(faqItems) : null;
 
 const relatedTools = relatedSlugs.map((s) => tools[s]).filter(Boolean);
 
-let relatedPosts: { id: string; data: { title: string; description: string } }[] = [];
-if (toolSlug) {
-  const allPosts = await getCollection('blog');
-  relatedPosts = allPosts.filter((p) => p.data.relatedTools.includes(toolSlug)).slice(0, 3);
+let relatedPosts: { slug: string; title: string; description: string }[] = [];
+if (toolSlug && hasDatabaseUrl()) {
+  relatedPosts = await getPostsByTool(toolSlug);
 }
 ---
 
@@ -82,16 +84,20 @@ if (toolSlug) {
         <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-6">Related Articles</h2>
         <div class="grid gap-4">
           {relatedPosts.map((post) => (
-            <a href={`/blog/${post.id}`} class="block bg-white rounded-2xl border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)] p-5 hover:shadow-[var(--shadow-brutalist-md)] hover:-translate-y-0.5 transition-all">
-              <h3 class="font-black text-slate-900">{post.data.title}</h3>
-              <p class="text-slate-500 text-sm mt-1">{post.data.description}</p>
+            <a href={`/blog/${post.slug}`} class="block bg-white rounded-2xl border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)] p-5 hover:shadow-[var(--shadow-brutalist-md)] hover:-translate-y-0.5 transition-all">
+              <h3 class="font-black text-slate-900">{post.title}</h3>
+              <p class="text-slate-500 text-sm mt-1">{post.description}</p>
             </a>
           ))}
         </div>
       </section>
     )}
+    {toolSlug && turnstileSiteKey && (
+      <CommentSection client:visible toolSlug={toolSlug} turnstileSiteKey={turnstileSiteKey} />
+    )}
   </main>
   <Footer />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 </BaseLayout>

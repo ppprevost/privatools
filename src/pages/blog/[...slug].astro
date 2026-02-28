@@ -1,25 +1,27 @@
 ---
-import { getCollection, render } from 'astro:content';
+export const prerender = false;
+
+import { marked } from 'marked';
 import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getPostBySlug, hasDatabaseUrl } from '../../lib/blog';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
-}
+if (!hasDatabaseUrl()) return Astro.redirect('/');
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/blog');
+
+const post = await getPostBySlug(slug);
+if (!post) return Astro.redirect('/blog');
+
+const htmlContent = await marked(post.content);
 ---
 
 <BlogLayout
-  title={post.data.title}
-  description={post.data.description}
-  date={post.data.date}
-  relatedTools={post.data.relatedTools}
-  ogImage={post.data.ogImage}
+  title={post.title}
+  description={post.description}
+  date={post.date}
+  relatedTools={post.related_tools}
+  ogImage={post.og_image ?? undefined}
 >
-  <Content />
+  <Fragment set:html={htmlContent} />
 </BlogLayout>

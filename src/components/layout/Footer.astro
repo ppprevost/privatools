@@ -1,5 +1,7 @@
 ---
 import { ShieldCheck } from 'lucide-react';
+
+const showBlog = !!process.env.DATABASE_URL;
 ---
 
 <footer class="border-t-[3px] border-slate-900 bg-white mt-24">
@@ -28,7 +30,7 @@ import { ShieldCheck } from 'lucide-react';
         <h4 class="font-black text-slate-900 mb-3">Company</h4>
         <ul class="space-y-2 text-sm text-slate-600">
           <li><a href="/about" class="hover:text-indigo-600 transition-colors">About</a></li>
-          <li><a href="/blog" class="hover:text-indigo-600 transition-colors">Blog</a></li>
+          {showBlog && <li><a href="/blog" class="hover:text-indigo-600 transition-colors">Blog</a></li>}
           <li><a href="/privacy" class="hover:text-indigo-600 transition-colors">Privacy</a></li>
           <li><a href="/contact" class="hover:text-indigo-600 transition-colors">Contact</a></li>
         </ul>
