@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
-import { requireDatabaseUrl, requireOrigin, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
 
 const MAX_NAME = 200;
 const MAX_EMAIL = 320;
@@ -27,8 +27,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const dbGuard = requireDatabaseUrl();
   if (dbGuard) return dbGuard;
 
-  const originGuard = requireOrigin(request);
-  if (originGuard) return originGuard;
+  const authGuard = requireAuth(request);
+  if (authGuard) return authGuard;
 
   const ip = getClientIp(clientAddress, request);
   if (isRateLimited(ip)) {

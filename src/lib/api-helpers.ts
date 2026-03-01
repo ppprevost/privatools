@@ -17,7 +17,24 @@ export function requireDatabaseUrl(): Response | null {
   return null;
 }
 
-export function requireOrigin(request: Request): Response | null {
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+export function isMobileClient(request: Request): boolean {
+  const apiKey = request.headers.get('X-API-Key');
+  if (!apiKey || !process.env.MOBILE_API_KEY) return false;
+  return timingSafeEqual(apiKey, process.env.MOBILE_API_KEY);
+}
+
+export function requireAuth(request: Request): Response | null {
+  if (isMobileClient(request)) return null;
+
   const origin = request.headers.get('Origin');
   if (!origin || !ALLOWED_ORIGINS.some((o) => origin.startsWith(o))) {
     return jsonError('Forbidden.', 403);

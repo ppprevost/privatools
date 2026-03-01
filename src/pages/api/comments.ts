@@ -3,7 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
 import { tools } from '../../lib/tools-config';
-import { requireDatabaseUrl, requireOrigin, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, isMobileClient, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
 
 async function hashIP(ip: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -32,8 +32,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const dbGuard = requireDatabaseUrl();
   if (dbGuard) return dbGuard;
 
-  const originGuard = requireOrigin(request);
-  if (originGuard) return originGuard;
+  const authGuard = requireAuth(request);
+  if (authGuard) return authGuard;
 
   try {
     const body = await request.json();
@@ -58,7 +58,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       return jsonError('Comment must be between 10 and 2000 characters.');
     }
 
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken))) {
+    const mobile = isMobileClient(request);
+    if (!mobile && (!turnstileToken || !(await verifyTurnstile(turnstileToken)))) {
       return jsonError('Captcha verification failed.', 403);
     }
 
