@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import { useTurnstile } from '@/hooks/useTurnstile';
 
 type FormState = 'idle' | 'sending' | 'success' | 'error';
 
@@ -14,46 +15,7 @@ export default function ContactForm({ turnstileSiteKey }: Readonly<Props>) {
   const [message, setMessage] = useState('');
   const [state, setState] = useState<FormState>('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const turnstileWidgetIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!turnstileRef.current) return;
-
-    const renderWidget = () => {
-      if (turnstileWidgetIdRef.current !== null) return;
-      const w = window as unknown as { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => string } };
-      if (!w.turnstile) return;
-      turnstileWidgetIdRef.current = w.turnstile.render(turnstileRef.current, {
-        sitekey: turnstileSiteKey,
-        theme: 'light',
-      });
-    };
-
-    if ((window as unknown as { turnstile?: unknown }).turnstile) {
-      renderWidget();
-    } else {
-      const interval = setInterval(() => {
-        if ((window as unknown as { turnstile?: unknown }).turnstile) {
-          clearInterval(interval);
-          renderWidget();
-        }
-      }, 200);
-      return () => clearInterval(interval);
-    }
-  }, [turnstileSiteKey]);
-
-  const getTurnstileToken = (): string | null => {
-    const input = turnstileRef.current?.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]');
-    return input?.value || null;
-  };
-
-  const resetTurnstile = () => {
-    const w = window as unknown as { turnstile?: { reset: (id: string) => void } };
-    if (w.turnstile && turnstileWidgetIdRef.current !== null) {
-      w.turnstile.reset(turnstileWidgetIdRef.current);
-    }
-  };
+  const { containerRef: turnstileRef, getToken: getTurnstileToken, reset: resetTurnstile } = useTurnstile(turnstileSiteKey);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

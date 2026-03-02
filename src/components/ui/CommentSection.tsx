@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useTurnstile } from '@/hooks/useTurnstile';
 
 interface Comment {
   id: number;
@@ -37,8 +38,7 @@ export default function CommentSection({ toolSlug, turnstileSiteKey }: Readonly<
   const [website, setWebsite] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const turnstileWidgetIdRef = useRef<string | null>(null);
+  const { containerRef: turnstileRef, getToken: getTurnstileToken, reset: resetTurnstile } = useTurnstile(turnstileSiteKey);
 
   useEffect(() => {
     fetch(`/api/comments/${toolSlug}`)
@@ -49,44 +49,6 @@ export default function CommentSection({ toolSlug, turnstileSiteKey }: Readonly<
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [toolSlug]);
-
-  useEffect(() => {
-    if (!turnstileRef.current) return;
-
-    const renderWidget = () => {
-      if (turnstileWidgetIdRef.current !== null) return;
-      const w = window as unknown as { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => string } };
-      if (!w.turnstile) return;
-      turnstileWidgetIdRef.current = w.turnstile.render(turnstileRef.current, {
-        sitekey: turnstileSiteKey,
-        theme: 'light',
-      });
-    };
-
-    if ((window as unknown as { turnstile?: unknown }).turnstile) {
-      renderWidget();
-    } else {
-      const interval = setInterval(() => {
-        if ((window as unknown as { turnstile?: unknown }).turnstile) {
-          clearInterval(interval);
-          renderWidget();
-        }
-      }, 200);
-      return () => clearInterval(interval);
-    }
-  }, [turnstileSiteKey]);
-
-  const getTurnstileToken = (): string | null => {
-    const input = turnstileRef.current?.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]');
-    return input?.value || null;
-  };
-
-  const resetTurnstile = () => {
-    const w = window as unknown as { turnstile?: { reset: (id: string) => void } };
-    if (w.turnstile && turnstileWidgetIdRef.current !== null) {
-      w.turnstile.reset(turnstileWidgetIdRef.current);
-    }
-  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

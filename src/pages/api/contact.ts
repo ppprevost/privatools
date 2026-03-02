@@ -2,40 +2,13 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
-import { requireDatabaseUrl, requireAuth, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, getClientIp, verifyTurnstile, createRateLimiter, jsonResponse, jsonError } from '../../lib/api-helpers';
 
 const MAX_NAME = 200;
 const MAX_EMAIL = 320;
 const MAX_MESSAGE = 5000;
 
-const RATE_LIMIT_WINDOW = 60_000;
-const RATE_LIMIT_MAX = 5;
-const ipHits = new Map<string, { count: number; reset: number }>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = ipHits.get(ip);
-  if (!entry || now > entry.reset) {
-    ipHits.set(ip, { count: 1, reset: now + RATE_LIMIT_WINDOW });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT_MAX;
-}
-
-async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return false;
-
-  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ secret, response: token }),
-  });
-
-  const data = await res.json() as { success: boolean };
-  return data.success;
-}
+const isRateLimited = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const dbGuard = requireDatabaseUrl();

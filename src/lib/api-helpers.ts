@@ -17,7 +17,7 @@ export function requireDatabaseUrl(): Response | null {
   return null;
 }
 
-function timingSafeEqual(a: string, b: string): boolean {
+export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let result = 0;
   for (let i = 0; i < a.length; i++) {
@@ -44,4 +44,54 @@ export function requireAuth(request: Request): Response | null {
 
 export function getClientIp(clientAddress: string | undefined, request: Request): string {
   return clientAddress || request.headers.get('x-forwarded-for') || 'unknown';
+}
+
+export async function verifyTurnstile(token: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return false;
+
+  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ secret, response: token }),
+  });
+
+  const data = await res.json() as { success: boolean };
+  return data.success;
+}
+
+interface RateLimitEntry {
+  count: number;
+  reset: number;
+  lockedUntil: number;
+}
+
+interface RateLimitOptions {
+  windowMs: number;
+  max: number;
+  lockoutThreshold?: number;
+  lockoutDurationMs?: number;
+}
+
+export function createRateLimiter({ windowMs, max, lockoutThreshold, lockoutDurationMs }: RateLimitOptions) {
+  const hits = new Map<string, RateLimitEntry>();
+
+  return (ip: string): boolean => {
+    const now = Date.now();
+    const entry = hits.get(ip);
+
+    if (entry && now < entry.lockedUntil) return true;
+
+    if (!entry || now > entry.reset) {
+      hits.set(ip, { count: 1, reset: now + windowMs, lockedUntil: 0 });
+      return false;
+    }
+
+    entry.count++;
+    if (lockoutThreshold && lockoutDurationMs && entry.count > lockoutThreshold) {
+      entry.lockedUntil = now + lockoutDurationMs;
+      return true;
+    }
+    return entry.count > max;
+  };
 }

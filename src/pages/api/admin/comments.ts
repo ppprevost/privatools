@@ -2,41 +2,14 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
-import { requireDatabaseUrl, getClientIp, jsonResponse, jsonError } from '../../../lib/api-helpers';
+import { requireDatabaseUrl, getClientIp, timingSafeEqual, createRateLimiter, jsonResponse, jsonError } from '../../../lib/api-helpers';
 
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
-}
-
-const RATE_LIMIT_WINDOW = 60_000;
-const RATE_LIMIT_MAX = 10;
-const LOCKOUT_THRESHOLD = 20;
-const LOCKOUT_DURATION = 15 * 60_000;
-const ipHits = new Map<string, { count: number; reset: number; lockedUntil: number }>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = ipHits.get(ip);
-
-  if (entry && now < entry.lockedUntil) return true;
-
-  if (!entry || now > entry.reset) {
-    ipHits.set(ip, { count: 1, reset: now + RATE_LIMIT_WINDOW, lockedUntil: 0 });
-    return false;
-  }
-
-  entry.count++;
-  if (entry.count > LOCKOUT_THRESHOLD) {
-    entry.lockedUntil = now + LOCKOUT_DURATION;
-    return true;
-  }
-  return entry.count > RATE_LIMIT_MAX;
-}
+const isRateLimited = createRateLimiter({
+  windowMs: 60_000,
+  max: 10,
+  lockoutThreshold: 20,
+  lockoutDurationMs: 15 * 60_000,
+});
 
 function requireAdmin(request: Request): Response | null {
   const secret = process.env.ADMIN_SECRET;

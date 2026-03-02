@@ -3,7 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { neon } from '@neondatabase/serverless';
 import { tools } from '../../lib/tools-config';
-import { requireDatabaseUrl, requireAuth, isMobileClient, getClientIp, jsonResponse, jsonError } from '../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, isMobileClient, getClientIp, verifyTurnstile, jsonResponse, jsonError } from '../../lib/api-helpers';
 
 async function hashIP(ip: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -12,20 +12,6 @@ async function hashIP(ip: string): Promise<string> {
   return Array.from(new Uint8Array(hashBuffer))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
-}
-
-async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return false;
-
-  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ secret, response: token }),
-  });
-
-  const data = await res.json();
-  return data.success === true;
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
