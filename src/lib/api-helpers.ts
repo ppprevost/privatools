@@ -1,6 +1,6 @@
 export const JSON_HEADERS = { 'Content-Type': 'application/json' } as const;
 
-export const ALLOWED_ORIGINS = ['https://privatools.com', 'http://localhost:4321'];
+export const ALLOWED_ORIGINS = ['https://priva.tools', 'https://privatools.com', 'http://localhost:4321'];
 
 export function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), { status, headers: JSON_HEADERS });
