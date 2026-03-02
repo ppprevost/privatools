@@ -38,7 +38,7 @@ export function buildArticleSchema(input: ArticleSchemaInput) {
     "publisher": {
       "@type": "Organization",
       "name": "Priva.TOOLS",
-      "url": "https://privatools.com",
+      "url": "https://priva.tools",
     },
   };
 }
