@@ -20,6 +20,10 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      '@eslint-react/naming-convention/ref-name': 'error',
+      '@eslint-react/no-array-index-key': 'error',
+    },
   },
   {
     files: ['**/*.astro'],
