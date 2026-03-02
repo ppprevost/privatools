@@ -1,7 +1,7 @@
 # Audit de securite -- PrivaTools
 
-**Date** : 2026-02-28
-**Stack** : Astro 5 + React 19, traitement client-side (Web Workers), 1 endpoint SSR (`/api/contact`)
+**Date** : 2026-03-02
+**Stack** : Astro 5 + React 19, traitement client-side (Web Workers), endpoints SSR (`/api/contact`, `/api/comments`, `/api/admin/comments`)
 
 ---
 
@@ -107,10 +107,38 @@ Les devDependencies sont presentes dans l'image finale, augmentant la surface d'
 
 ---
 
+## Corriges
+
+### #2 -- CSRF sur `/api/contact` -- CORRIGE
+Verification du header `Origin` contre une whitelist (`ALLOWED_ORIGINS`) dans `requireAuth()`.
+**Fichier** : `src/lib/api-helpers.ts`
+
+### #3 -- Rate limiting sur `/api/contact` -- CORRIGE
+Rate limiting par IP (5 requetes/min) en memoire. Captcha Cloudflare Turnstile ajoute sur le formulaire contact et les commentaires.
+**Fichiers** : `src/pages/api/contact.ts`, `src/components/tools/ContactForm.tsx`
+
+### #6 -- Validation de longueur -- CORRIGE
+Limites ajoutees : name (200), email (320), message (5000). Commentaires : name (3-100), content (10-2000).
+**Fichiers** : `src/pages/api/contact.ts`, `src/pages/api/comments.ts`
+
+### Route admin `/api/admin/comments` -- SECURISEE
+- Authentification par `Authorization: Bearer <ADMIN_SECRET>` (variable d'env, 256 bits)
+- Comparaison timing-safe du secret pour prevenir les timing attacks
+- Rate limiting : 10 req/min par IP, lockout 15 min apres 20 tentatives (anti-bruteforce)
+- Le rate limit s'applique AVANT la verification du secret (pas de leak de timing sur les 429)
+- Endpoints GET (lister), PATCH (approuver/rejeter), DELETE (supprimer)
+- Les commentaires ne sont visibles publiquement qu'apres approbation (`approved = true`)
+**Fichier** : `src/pages/api/admin/comments.ts`
+
+---
+
 ## Positif
 
 - 0 vulnerabilite npm (`pnpm audit` clean)
 - Aucun XSS (pas de `dangerouslySetInnerHTML`, `innerHTML`, `eval`)
 - SQL injection mitigee (tagged template literals Neon)
-- Aucun script tiers / tracking
+- Aucun script tiers / tracking (hors Cloudflare Turnstile)
 - Pas de source maps en production
+- Cloudflare Turnstile sur formulaire contact et commentaires
+- Moderation des commentaires avant publication
+- Comparaisons timing-safe pour les secrets (API key mobile, admin secret)
