@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 
-const showSupport = !!process.env.PAYPAL_LINK;
+const showSupport = !!import.meta.env.PUBLIC_PAYPAL_LINK;
 ---
 
 <BaseLayout title="About - Priva.TOOLS" description="Priva.TOOLS is a free suite of PDF and image tools that process everything in your browser. No uploads, no tracking, no accounts.">

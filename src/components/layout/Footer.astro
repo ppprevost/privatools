@@ -2,7 +2,7 @@
 import { ShieldCheck } from 'lucide-react';
 
 const showBlog = !!process.env.DATABASE_URL;
-const showSupport = !!process.env.PAYPAL_LINK;
+const showSupport = !!import.meta.env.PUBLIC_PAYPAL_LINK;
 ---
 
 <footer class="border-t-[3px] border-slate-900 bg-white mt-24">

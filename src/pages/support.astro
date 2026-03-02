@@ -4,7 +4,7 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import { Heart } from 'lucide-react';
 
-const PAYPAL_LINK = process.env.PAYPAL_LINK;
+const PAYPAL_LINK = import.meta.env.PUBLIC_PAYPAL_LINK;
 const showDonation = !!PAYPAL_LINK;
 ---
 
