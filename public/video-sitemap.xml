@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://priva.tools/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://priva.tools/og-default.jpg</video:thumbnail_loc>
+      <video:title>Priva.TOOLS - Free Online PDF &amp; Image Tools | 100% Private</video:title>
+      <video:description>Discover 10 free online tools to compress, merge, split PDFs and compress, resize, crop images. Everything runs in your browser with WebAssembly. Your files never leave your device.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/XUsEyKTrIwU</video:player_loc>
+      <video:duration>75</video:duration>
+      <video:publication_date>2026-03-03</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+</urlset>

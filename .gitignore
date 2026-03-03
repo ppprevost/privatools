@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# remotion video project (private)
+video/
+
+# claude code
+.claude/

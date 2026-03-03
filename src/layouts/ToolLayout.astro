@@ -2,10 +2,12 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import ToolCard from '../components/ui/ToolCard';
 import CommentSection from '../components/ui/CommentSection';
 import { tools } from '../lib/tools-config';
-import { buildFaqSchema } from '../lib/schema';
+import type { ToolCategory } from '../lib/tools-config';
+import { buildFaqSchema, buildBreadcrumbSchema, buildWebAppSchema } from '../lib/schema';
 import { getPostsByTool, hasDatabaseUrl } from '../lib/blog';
 
 const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY ?? '';
@@ -27,22 +29,22 @@ interface Props {
 const { title, heading, description, relatedSlugs = [], faqItems = [], toolSlug } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": heading,
-  "url": canonicalURL.href,
-  "description": description,
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Any",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "browserRequirements": "Requires JavaScript and WebAssembly support"
+const toolConfig = toolSlug ? tools[toolSlug] : null;
+const category: ToolCategory = toolConfig?.category ?? 'pdf';
+
+const categoryLabel: Record<string, string> = {
+  pdf: 'PDF Tools',
+  image: 'Image Tools',
 };
 
+const breadcrumbItems = [
+  { name: 'Home', url: 'https://priva.tools/' },
+  { name: categoryLabel[category], url: `https://priva.tools/#${category}-tools` },
+  { name: heading, url: canonicalURL.href },
+];
+
+const jsonLd = buildWebAppSchema({ name: heading, url: canonicalURL.href, description, category });
+const breadcrumbSchema = buildBreadcrumbSchema(breadcrumbItems);
 const faqSchema = faqItems.length > 0 ? buildFaqSchema(faqItems) : null;
 
 const relatedTools = relatedSlugs.map((s) => tools[s]).filter(Boolean);
@@ -55,7 +57,12 @@ if (toolSlug && hasDatabaseUrl()) {
 
 <BaseLayout title={title} description={description}>
   <Header />
-  <main class="max-w-4xl mx-auto px-6 py-12 md:py-20">
+  <main id="main-content" class="max-w-4xl mx-auto px-6 py-12 md:py-20">
+    <Breadcrumbs items={[
+      { label: 'Home', href: '/' },
+      { label: categoryLabel[category], href: `/#${category}-tools` },
+      { label: heading },
+    ]} />
     <div class="text-center mb-10">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-400 text-emerald-700 text-xs font-black uppercase tracking-wider mb-4">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -99,5 +106,6 @@ if (toolSlug && hasDatabaseUrl()) {
   <Footer />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 </BaseLayout>
