@@ -16,7 +16,7 @@ export default function UnlockPdf() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const worker = useWorker({
+  const { process: workerProcess, reset: workerReset, ...workerState } = useWorker({
     createWorker: () =>
       new Worker(new URL('../../lib/workers/unlock-pdf.worker.ts', import.meta.url), { type: 'module' }),
   });
@@ -24,7 +24,7 @@ export default function UnlockPdf() {
   const handleFiles = useCallback(async (files: File[]) => {
     const f = files[0];
     setFile(f);
-    worker.reset();
+    workerReset();
     setIsEncrypted(null);
     setPassword('');
     setDetecting(true);
@@ -33,27 +33,32 @@ export default function UnlockPdf() {
     const status = await detectEncryption(buffer);
     setIsEncrypted(status.isEncrypted);
     setDetecting(false);
-  }, [worker]);
+  }, [workerReset]);
 
   const handleUnlock = useCallback(async () => {
     if (!file || !password) return;
 
     const buffer = await file.arrayBuffer();
-    worker.process(buffer, { password }, file.name);
-  }, [file, password, worker]);
+    workerProcess(buffer, { password }, file.name);
+  }, [file, password, workerProcess]);
+
+  const handlePasswordChange = useCallback((value: string) => {
+    setPassword(value);
+    if (workerState.error) workerReset();
+  }, [workerState.error, workerReset]);
 
   useEffect(() => {
-    if (worker.result) fireConfetti();
-  }, [worker.result]);
+    if (workerState.result) fireConfetti();
+  }, [workerState.result]);
 
-  const resultBlob = worker.result ? new Blob([worker.result.data], { type: 'application/pdf' }) : null;
+  const resultBlob = workerState.result ? new Blob([workerState.result.data], { type: 'application/pdf' }) : null;
 
   const handleRemove = useCallback(() => {
     setFile(null);
-    worker.reset();
+    workerReset();
     setIsEncrypted(null);
     setPassword('');
-  }, [worker]);
+  }, [workerReset]);
 
   return (
     <div className="space-y-6">
@@ -87,7 +92,7 @@ export default function UnlockPdf() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
                     placeholder="Enter PDF password"
                     className="w-full px-4 py-3 pr-12 rounded-xl border-[3px] border-slate-900 font-medium focus:outline-none focus:border-indigo-500"
                     onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock(); }}
@@ -104,18 +109,18 @@ export default function UnlockPdf() {
             </>
           )}
 
-          {worker.isProcessing && (
+          {workerState.isProcessing && (
             <div className="space-y-2">
-              <ProgressBar value={worker.progress} />
+              <ProgressBar value={workerState.progress} />
               <p className="text-sm text-slate-500 text-center font-medium">Decrypting...</p>
             </div>
           )}
 
-          {worker.error && (
-            <p className="text-sm text-rose-600 font-bold text-center">{worker.error}</p>
+          {workerState.error && (
+            <p className="text-sm text-rose-600 font-bold text-center">{workerState.error}</p>
           )}
 
-          {isEncrypted === true && !worker.isProcessing && !resultBlob && !worker.error && (
+          {isEncrypted === true && !workerState.isProcessing && !resultBlob && !workerState.error && (
             <div className="flex justify-center">
               <Button onClick={handleUnlock} size="lg" disabled={!password}>Unlock PDF</Button>
             </div>
@@ -123,7 +128,7 @@ export default function UnlockPdf() {
 
           {resultBlob && (
             <div className="flex justify-center">
-              <DownloadButton blob={resultBlob} filename={worker.result?.filename ?? ''} />
+              <DownloadButton blob={resultBlob} filename={workerState.result?.filename ?? ''} />
             </div>
           )}
         </>

@@ -22,7 +22,7 @@ export default function ProtectPdf() {
   const [allowExtract, setAllowExtract] = useState(true);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const worker = useWorker({
+  const { process: workerProcess, reset: workerReset, ...workerState } = useWorker({
     createWorker: () =>
       new Worker(new URL('../../lib/workers/protect-pdf.worker.ts', import.meta.url), { type: 'module' }),
   });
@@ -30,20 +30,24 @@ export default function ProtectPdf() {
   const handleFiles = useCallback(async (files: File[]) => {
     const f = files[0];
     setFile(f);
-    worker.reset();
+    workerReset();
     setAlreadyEncrypted(false);
     setValidationError(null);
 
     const buffer = await f.arrayBuffer();
     const status = await detectEncryption(buffer);
     if (status.isEncrypted) setAlreadyEncrypted(true);
-  }, [worker]);
+  }, [workerReset]);
 
   const handleProtect = useCallback(async () => {
     if (!file) return;
 
     if (!password) {
       setValidationError('Password is required.');
+      return;
+    }
+    if (password.length < 8) {
+      setValidationError('Password must be at least 8 characters.');
       return;
     }
     if (password !== confirmPassword) {
@@ -53,30 +57,30 @@ export default function ProtectPdf() {
     setValidationError(null);
 
     const buffer = await file.arrayBuffer();
-    worker.process(buffer, {
+    workerProcess(buffer, {
       userPassword: password,
       ownerPassword: ownerPassword || undefined,
       allowPrint,
       allowModify,
       allowExtract,
     }, file.name);
-  }, [file, password, confirmPassword, ownerPassword, allowPrint, allowModify, allowExtract, worker]);
+  }, [file, password, confirmPassword, ownerPassword, allowPrint, allowModify, allowExtract, workerProcess]);
 
   useEffect(() => {
-    if (worker.result) fireConfetti();
-  }, [worker.result]);
+    if (workerState.result) fireConfetti();
+  }, [workerState.result]);
 
-  const resultBlob = worker.result ? new Blob([worker.result.data], { type: 'application/pdf' }) : null;
+  const resultBlob = workerState.result ? new Blob([workerState.result.data], { type: 'application/pdf' }) : null;
 
   const handleRemove = useCallback(() => {
     setFile(null);
-    worker.reset();
+    workerReset();
     setPassword('');
     setConfirmPassword('');
     setOwnerPassword('');
     setAlreadyEncrypted(false);
     setValidationError(null);
-  }, [worker]);
+  }, [workerReset]);
 
   return (
     <div className="space-y-6">
@@ -173,18 +177,18 @@ export default function ProtectPdf() {
             </div>
           )}
 
-          {worker.isProcessing && (
+          {workerState.isProcessing && (
             <div className="space-y-2">
-              <ProgressBar value={worker.progress} />
+              <ProgressBar value={workerState.progress} />
               <p className="text-sm text-slate-500 text-center font-medium">Encrypting...</p>
             </div>
           )}
 
-          {worker.error && (
-            <p className="text-sm text-rose-600 font-bold text-center">{worker.error}</p>
+          {workerState.error && (
+            <p className="text-sm text-rose-600 font-bold text-center">{workerState.error}</p>
           )}
 
-          {!worker.isProcessing && !resultBlob && !worker.error && (
+          {!workerState.isProcessing && !resultBlob && !workerState.error && (
             <div className="flex justify-center">
               <Button onClick={handleProtect} size="lg">Protect PDF</Button>
             </div>
@@ -192,7 +196,7 @@ export default function ProtectPdf() {
 
           {resultBlob && (
             <div className="flex justify-center">
-              <DownloadButton blob={resultBlob} filename={worker.result?.filename ?? ''} />
+              <DownloadButton blob={resultBlob} filename={workerState.result?.filename ?? ''} />
             </div>
           )}
         </>

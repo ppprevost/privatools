@@ -42,6 +42,7 @@ export async function protectPdf(
 
   onProgress?.(80);
   const result = qpdf.FS.readFile('/output/output.pdf');
+  qpdf.FS.unlink('/output/output.pdf');
   qpdf.FS.unmount('/input');
   onProgress?.(100);
 
