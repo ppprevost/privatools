@@ -21,7 +21,7 @@ export const onRequest = defineMiddleware(async (_ctx, next) => {
       "img-src 'self' blob: data:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
-      "frame-src https://challenges.cloudflare.com",
+      "frame-src https://challenges.cloudflare.com https://www.youtube.com",
       "frame-ancestors 'none'",
     ].join('; ')
   );

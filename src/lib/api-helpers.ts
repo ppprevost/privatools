@@ -46,18 +46,20 @@ export function getClientIp(clientAddress: string | undefined, request: Request)
   return clientAddress || request.headers.get('x-forwarded-for') || 'unknown';
 }
 
-export async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return false;
+const ERROR_STATUS_MAP: Record<string, number> = {
+  ValidationError: 400,
+  CaptchaError: 403,
+  AuthError: 401,
+  NotFoundError: 404,
+  RateLimitError: 429,
+};
 
-  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ secret, response: token }),
-  });
-
-  const data = await res.json() as { success: boolean };
-  return data.success;
+export function handleUseCaseError(e: unknown): Response {
+  if (e instanceof Error && e.name in ERROR_STATUS_MAP) {
+    return jsonError(e.message, ERROR_STATUS_MAP[e.name]);
+  }
+  console.error('Unexpected error:', (e as Error).message);
+  return jsonError('Something went wrong. Please try again.', 500);
 }
 
 interface RateLimitEntry {

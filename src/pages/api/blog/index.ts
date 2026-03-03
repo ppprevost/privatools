@@ -1,8 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { getAllPosts } from '../../../lib/blog';
-import { requireDatabaseUrl, requireAuth, jsonResponse, jsonError } from '../../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, jsonResponse, handleUseCaseError } from '../../../lib/api-helpers';
+import { listPosts } from '@/use-cases/get-blog-posts';
 
 export const GET: APIRoute = async ({ request }) => {
   const dbGuard = requireDatabaseUrl();
@@ -12,12 +12,9 @@ export const GET: APIRoute = async ({ request }) => {
   if (authGuard) return authGuard;
 
   try {
-    const posts = await getAllPosts();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const listing = posts.map(({ content, ...rest }) => rest);
-    return jsonResponse(listing);
+    const posts = await listPosts();
+    return jsonResponse(posts);
   } catch (e) {
-    console.error('Blog list error:', (e as Error).message);
-    return jsonError('Something went wrong.', 500);
+    return handleUseCaseError(e);
   }
 };

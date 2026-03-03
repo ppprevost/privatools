@@ -1,8 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { getPostBySlug } from '../../../lib/blog';
-import { requireDatabaseUrl, requireAuth, jsonResponse, jsonError } from '../../../lib/api-helpers';
+import { requireDatabaseUrl, requireAuth, jsonResponse, jsonError, handleUseCaseError } from '../../../lib/api-helpers';
+import { getPost } from '@/use-cases/get-blog-posts';
 
 export const GET: APIRoute = async ({ params, request }) => {
   const dbGuard = requireDatabaseUrl();
@@ -15,11 +15,9 @@ export const GET: APIRoute = async ({ params, request }) => {
   if (!slug) return jsonError('Missing slug.');
 
   try {
-    const post = await getPostBySlug(slug);
-    if (!post) return jsonError('Post not found.', 404);
+    const post = await getPost(slug);
     return jsonResponse(post);
   } catch (e) {
-    console.error('Blog post error:', (e as Error).message);
-    return jsonError('Something went wrong.', 500);
+    return handleUseCaseError(e);
   }
 };

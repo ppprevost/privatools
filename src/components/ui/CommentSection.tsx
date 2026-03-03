@@ -1,12 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTurnstile } from '@/hooks/useTurnstile';
-
-interface Comment {
-  id: number;
-  author_name: string;
-  content: string;
-  created_at: string;
-}
+import type { PublicComment } from '@/domain/entities';
 
 interface Props {
   toolSlug: string;
@@ -31,7 +25,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function CommentSection({ toolSlug, turnstileSiteKey }: Readonly<Props>) {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<PublicComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorName, setAuthorName] = useState('');
   const [content, setContent] = useState('');
