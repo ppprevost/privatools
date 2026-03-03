@@ -1,18 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { neon } from '@neondatabase/serverless';
-import { tools } from '../../lib/tools-config';
-import { requireDatabaseUrl, requireAuth, isMobileClient, getClientIp, verifyTurnstile, jsonResponse, jsonError } from '../../lib/api-helpers';
-
-async function hashIP(ip: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(ip);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
+import { requireDatabaseUrl, requireAuth, isMobileClient, getClientIp, jsonResponse, handleUseCaseError } from '../../lib/api-helpers';
+import { submitComment } from '@/use-cases/submit-comment';
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const dbGuard = requireDatabaseUrl();
@@ -25,51 +15,18 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const body = await request.json();
     const { toolSlug, authorName, content, turnstileToken, website } = body;
 
-    if (website) {
-      return jsonResponse({ success: true });
-    }
-
-    if (!toolSlug || !tools[toolSlug]) {
-      return jsonError('Invalid tool.');
-    }
-
-    const trimmedName = authorName?.trim() || '';
-    const trimmedContent = content?.trim() || '';
-
-    if (trimmedName.length < 3 || trimmedName.length > 100) {
-      return jsonError('Name must be between 3 and 100 characters.');
-    }
-
-    if (trimmedContent.length < 10 || trimmedContent.length > 2000) {
-      return jsonError('Comment must be between 10 and 2000 characters.');
-    }
-
-    const mobile = isMobileClient(request);
-    if (!mobile && (!turnstileToken || !(await verifyTurnstile(turnstileToken)))) {
-      return jsonError('Captcha verification failed.', 403);
-    }
-
-    const ip = getClientIp(clientAddress, request);
-    const ipHash = await hashIP(ip);
-
-    const sql = neon(process.env.DATABASE_URL ?? '');
-
-    const rateCheck = await sql`
-      SELECT COUNT(*)::int AS cnt FROM comments
-      WHERE ip_hash = ${ipHash} AND created_at > NOW() - INTERVAL '1 hour'
-    `;
-    if (rateCheck[0].cnt >= 3) {
-      return jsonError('Too many comments. Please try again later.', 429);
-    }
-
-    await sql`
-      INSERT INTO comments (tool_slug, author_name, content, ip_hash)
-      VALUES (${toolSlug}, ${trimmedName}, ${trimmedContent}, ${ipHash})
-    `;
+    await submitComment({
+      toolSlug,
+      authorName,
+      content,
+      turnstileToken,
+      website,
+      ip: getClientIp(clientAddress, request),
+      isMobile: isMobileClient(request),
+    });
 
     return jsonResponse({ success: true }, 201);
   } catch (e) {
-    console.error('Comment submission error:', (e as Error).message);
-    return jsonError('Something went wrong. Please try again.', 500);
+    return handleUseCaseError(e);
   }
 };
