@@ -1,12 +1,12 @@
 import { FileText, Image as ImageIcon, X } from 'lucide-react';
 import { cn, formatFileSize } from '@/lib/utils';
 
-interface FileCardProps {
+type FileCardProps = {
   file: File;
   onRemove?: () => void;
   resultSize?: number;
   className?: string;
-}
+};
 
 export default function FileCard({ file, onRemove, resultSize, className }: Readonly<FileCardProps>) {
   const isPdf = file.type === 'application/pdf';

@@ -1,8 +1,8 @@
 import { PDFDocument } from 'pdf-lib';
 
-export interface CompressOptions {
+export type CompressOptions = {
   stripMetadata: boolean;
-}
+};
 
 export async function compressPdf(
   data: ArrayBuffer,

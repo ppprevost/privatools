@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-interface TurnstileWindow {
+type TurnstileWindow = {
   turnstile?: {
     render: (el: HTMLElement, opts: Record<string, unknown>) => string;
     reset: (id: string) => void;
   };
-}
+};
 
 export function useTurnstile(siteKey: string) {
   const containerRef = useRef<HTMLDivElement>(null);

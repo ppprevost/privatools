@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: ReactNode;
-}
+};
 
 const variantStyles: Record<string, string> = {
   primary: 'bg-slate-900 text-white hover:bg-indigo-600 shadow-[var(--shadow-brutalist-sm)]',

@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
 import { useWorker } from './useWorker';
 
-interface UseFileProcessorOptions {
+type UseFileProcessorOptions = {
   createWorker: () => Worker;
-}
+};
 
 export function useFileProcessor({ createWorker }: UseFileProcessorOptions) {
   const [files, setFiles] = useState<File[]>([]);

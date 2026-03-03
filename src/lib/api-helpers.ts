@@ -62,18 +62,18 @@ export function handleUseCaseError(e: unknown): Response {
   return jsonError('Something went wrong. Please try again.', 500);
 }
 
-interface RateLimitEntry {
+type RateLimitEntry = {
   count: number;
   reset: number;
   lockedUntil: number;
-}
+};
 
-interface RateLimitOptions {
+type RateLimitOptions = {
   windowMs: number;
   max: number;
   lockoutThreshold?: number;
   lockoutDurationMs?: number;
-}
+};
 
 export function createRateLimiter({ windowMs, max, lockoutThreshold, lockoutDurationMs }: RateLimitOptions) {
   const hits = new Map<string, RateLimitEntry>();

@@ -1,4 +1,4 @@
-import { NotFoundError } from '@/domain/errors';
+import { notFoundError } from '@/domain/errors';
 import * as blogRepo from '@/infra/blog.repo';
 import type { BlogPost, BlogPostSummary } from '@/domain/entities';
 
@@ -10,7 +10,7 @@ export async function listPosts(): Promise<BlogPostSummary[]> {
 
 export async function getPost(slug: string): Promise<BlogPost> {
   const post = await blogRepo.getPostBySlug(slug);
-  if (!post) throw new NotFoundError('Post not found.');
+  if (!post) throw notFoundError('Post not found.');
   return post;
 }
 

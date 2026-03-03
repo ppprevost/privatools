@@ -1,9 +1,9 @@
 import { FileText, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface HandDrawnIconProps {
+type HandDrawnIconProps = {
   type: 'pdf' | 'img';
-}
+};
 
 export default function HandDrawnIcon({ type }: Readonly<HandDrawnIconProps>) {
   return (

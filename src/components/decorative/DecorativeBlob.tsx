@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 
-interface DecorativeBlobProps {
+type DecorativeBlobProps = {
   className?: string;
   color: string;
-}
+};
 
 export default function DecorativeBlob({ className, color }: Readonly<DecorativeBlobProps>) {
   return (

@@ -1,9 +1,9 @@
 import { PDFDocument } from 'pdf-lib';
 
-export interface SplitResult {
+export type SplitResult = {
   filename: string;
   data: Uint8Array;
-}
+};
 
 export async function splitPdf(
   data: ArrayBuffer,

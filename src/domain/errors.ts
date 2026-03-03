@@ -1,28 +1,17 @@
-export class ValidationError extends Error {
-  override name = 'ValidationError' as const;
+function createError(name: string, message: string): Error {
+  const error = new Error(message);
+  error.name = name;
+  return error;
 }
 
-export class RateLimitError extends Error {
-  override name = 'RateLimitError' as const;
-  constructor(message = 'Too many requests. Please try again later.') {
-    super(message);
-  }
-}
+export const validationError = (message: string) => createError('ValidationError', message);
 
-export class CaptchaError extends Error {
-  override name = 'CaptchaError' as const;
-  constructor(message = 'Captcha verification failed.') {
-    super(message);
-  }
-}
+export const rateLimitError = (message = 'Too many requests. Please try again later.') =>
+  createError('RateLimitError', message);
 
-export class NotFoundError extends Error {
-  override name = 'NotFoundError' as const;
-}
+export const captchaError = (message = 'Captcha verification failed.') =>
+  createError('CaptchaError', message);
 
-export class AuthError extends Error {
-  override name = 'AuthError' as const;
-  constructor(message = 'Unauthorized.') {
-    super(message);
-  }
-}
+export const notFoundError = (message: string) => createError('NotFoundError', message);
+
+export const authError = (message = 'Unauthorized.') => createError('AuthError', message);

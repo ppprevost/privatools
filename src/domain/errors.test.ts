@@ -1,39 +1,39 @@
 import { describe, it, expect } from 'vitest';
-import { ValidationError, RateLimitError, CaptchaError, NotFoundError, AuthError } from './errors';
+import { validationError, rateLimitError, captchaError, notFoundError, authError } from './errors';
 
 describe('domain errors', () => {
-  it('ValidationError has correct name and message', () => {
-    const err = new ValidationError('bad input');
+  it('validationError has correct name and message', () => {
+    const err = validationError('bad input');
     expect(err.name).toBe('ValidationError');
     expect(err.message).toBe('bad input');
     expect(err).toBeInstanceOf(Error);
   });
 
-  it('RateLimitError has correct name and default message', () => {
-    const err = new RateLimitError();
+  it('rateLimitError has correct name and default message', () => {
+    const err = rateLimitError();
     expect(err.name).toBe('RateLimitError');
     expect(err.message).toBe('Too many requests. Please try again later.');
   });
 
-  it('RateLimitError accepts custom message', () => {
-    const err = new RateLimitError('custom');
+  it('rateLimitError accepts custom message', () => {
+    const err = rateLimitError('custom');
     expect(err.message).toBe('custom');
   });
 
-  it('CaptchaError has correct name and default message', () => {
-    const err = new CaptchaError();
+  it('captchaError has correct name and default message', () => {
+    const err = captchaError();
     expect(err.name).toBe('CaptchaError');
     expect(err.message).toBe('Captcha verification failed.');
   });
 
-  it('NotFoundError has correct name and message', () => {
-    const err = new NotFoundError('not here');
+  it('notFoundError has correct name and message', () => {
+    const err = notFoundError('not here');
     expect(err.name).toBe('NotFoundError');
     expect(err.message).toBe('not here');
   });
 
-  it('AuthError has correct name and default message', () => {
-    const err = new AuthError();
+  it('authError has correct name and default message', () => {
+    const err = authError();
     expect(err.name).toBe('AuthError');
     expect(err.message).toBe('Unauthorized.');
   });

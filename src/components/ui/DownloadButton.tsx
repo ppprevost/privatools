@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Download, Share2, CheckCircle, X, Copy, Check, Mail } from 'lucide-react';
 import Button from './Button';
 
-interface DownloadButtonProps {
+type DownloadButtonProps = {
   blob: Blob;
   filename: string;
-}
+};
 
 const shareTargets = [
   { name: 'WhatsApp', icon: WhatsAppIcon, buildUrl: (url: string, text: string) => `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}` },

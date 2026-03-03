@@ -15,10 +15,10 @@ export function isValidEmail(email: string): boolean {
   return EMAIL_REGEX.test(email);
 }
 
-interface ValidationResult {
+type ValidationResult = {
   valid: boolean;
   error?: string;
-}
+};
 
 export function validateComment(name: string, content: string): ValidationResult {
   const trimmedName = name?.trim() ?? '';

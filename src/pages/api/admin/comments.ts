@@ -3,7 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { requireDatabaseUrl, getClientIp, timingSafeEqual, createRateLimiter, jsonResponse, jsonError, handleUseCaseError } from '../../../lib/api-helpers';
 import { listAllComments, approveComment, removeComment } from '@/use-cases/admin-comments';
-import { ValidationError } from '@/domain/errors';
+import { validationError } from '@/domain/errors';
 
 const isRateLimited = createRateLimiter({
   windowMs: 60_000,
@@ -55,7 +55,7 @@ export const PATCH: APIRoute = async ({ request, clientAddress }) => {
     const { id, approved } = body;
 
     if (typeof id !== 'number' || typeof approved !== 'boolean') {
-      throw new ValidationError('id (number) and approved (boolean) are required.');
+      throw validationError('id (number) and approved (boolean) are required.');
     }
 
     const result = await approveComment(id, approved);
@@ -74,7 +74,7 @@ export const DELETE: APIRoute = async ({ request, clientAddress }) => {
     const { id } = body;
 
     if (typeof id !== 'number') {
-      throw new ValidationError('id (number) is required.');
+      throw validationError('id (number) is required.');
     }
 
     await removeComment(id);

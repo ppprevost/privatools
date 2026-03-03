@@ -1,10 +1,10 @@
 import * as Progress from '@radix-ui/react-progress';
 import { cn } from '@/lib/utils';
 
-interface ProgressBarProps {
+type ProgressBarProps = {
   value: number;
   className?: string;
-}
+};
 
 export default function ProgressBar({ value, className }: Readonly<ProgressBarProps>) {
   return (

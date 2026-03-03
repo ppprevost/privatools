@@ -1,8 +1,8 @@
-export interface ResizeOptions {
+export type ResizeOptions = {
   width: number;
   height: number;
   maintainAspectRatio: boolean;
-}
+};
 
 export async function resizeImage(
   data: ArrayBuffer,

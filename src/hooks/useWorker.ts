@@ -1,16 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-export interface WorkerMessage {
+export type WorkerMessage = {
   type: 'progress' | 'result' | 'error';
   progress?: number;
   result?: ArrayBuffer;
   filename?: string;
   error?: string;
-}
+};
 
-interface UseWorkerOptions {
+type UseWorkerOptions = {
   createWorker: () => Worker;
-}
+};
 
 export function useWorker({ createWorker }: UseWorkerOptions) {
   const [progress, setProgress] = useState(0);

@@ -24,9 +24,9 @@ const categoryColors: Record<string, { bg: string; border: string; shadow: strin
   },
 };
 
-interface ToolCardProps {
+type ToolCardProps = {
   tool: ToolConfig;
-}
+};
 
 export default function ToolCard({ tool }: Readonly<ToolCardProps>) {
   const Icon = iconMap[tool.icon] ?? FileDown;

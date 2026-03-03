@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200 MB
 
-interface DropZoneProps {
+type DropZoneProps = {
   accept: string;
   multiple?: boolean;
   onFiles: (files: File[]) => void;
   compact?: boolean;
-}
+};
 
 export default function DropZone({ accept, multiple = false, onFiles, compact = false }: Readonly<DropZoneProps>) {
   const [isDragging, setIsDragging] = useState(false);

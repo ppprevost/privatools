@@ -5,10 +5,10 @@ const ORGANIZATION = {
   "logo": "https://priva.tools/favicon.svg",
 };
 
-interface FaqItem {
+type FaqItem = {
   question: string;
   answer: string;
-}
+};
 
 export function buildFaqSchema(items: FaqItem[]) {
   return {
@@ -25,10 +25,10 @@ export function buildFaqSchema(items: FaqItem[]) {
   };
 }
 
-interface BreadcrumbItem {
+type BreadcrumbItem = {
   name: string;
   url: string;
-}
+};
 
 export function buildBreadcrumbSchema(items: BreadcrumbItem[]) {
   return {
@@ -83,7 +83,7 @@ export function buildWebAppSchema(input: { name: string; url: string; descriptio
   };
 }
 
-interface VideoSchemaInput {
+type VideoSchemaInput = {
   title: string;
   description: string;
   thumbnailUrl: string;
@@ -91,7 +91,7 @@ interface VideoSchemaInput {
   duration: string;
   embedUrl: string;
   contentUrl?: string;
-}
+};
 
 export function buildVideoSchema(input: VideoSchemaInput) {
   return {
@@ -108,13 +108,13 @@ export function buildVideoSchema(input: VideoSchemaInput) {
   };
 }
 
-interface ArticleSchemaInput {
+type ArticleSchemaInput = {
   title: string;
   description: string;
   url: string;
   datePublished: string;
   dateModified?: string;
-}
+};
 
 export function buildArticleSchema(input: ArticleSchemaInput) {
   return {

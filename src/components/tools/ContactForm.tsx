@@ -5,9 +5,9 @@ import { useTurnstile } from '@/hooks/useTurnstile';
 
 type FormState = 'idle' | 'sending' | 'success' | 'error';
 
-interface Props {
+type Props = {
   turnstileSiteKey: string;
-}
+};
 
 export default function ContactForm({ turnstileSiteKey }: Readonly<Props>) {
   const [name, setName] = useState('');

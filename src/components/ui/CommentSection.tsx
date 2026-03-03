@@ -2,10 +2,10 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useTurnstile } from '@/hooks/useTurnstile';
 import type { PublicComment } from '@/domain/entities';
 
-interface Props {
+type Props = {
   toolSlug: string;
   turnstileSiteKey: string;
-}
+};
 
 function timeAgo(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);

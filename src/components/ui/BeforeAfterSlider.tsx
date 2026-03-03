@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect, type PointerEvent } from 'react';
 
-interface BeforeAfterSliderProps {
+type BeforeAfterSliderProps = {
   beforeSrc: string;
   afterSrc: string;
-}
+};
 
 export default function BeforeAfterSlider({ beforeSrc, afterSrc }: Readonly<BeforeAfterSliderProps>) {
   const [position, setPosition] = useState(50);

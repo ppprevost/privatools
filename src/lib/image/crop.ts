@@ -1,9 +1,9 @@
-export interface CropArea {
+export type CropArea = {
   x: number;
   y: number;
   width: number;
   height: number;
-}
+};
 
 export async function cropImage(
   data: ArrayBuffer,

@@ -1,4 +1,4 @@
-export interface Comment {
+export type Comment = {
   id: number;
   tool_slug: string;
   author_name: string;
@@ -6,17 +6,17 @@ export interface Comment {
   ip_hash: string;
   approved: boolean;
   created_at: string;
-}
+};
 
 export type PublicComment = Pick<Comment, 'id' | 'author_name' | 'content' | 'created_at'>;
 
-export interface ContactMessage {
+export type ContactMessage = {
   name: string;
   email: string;
   message: string;
-}
+};
 
-export interface BlogPost {
+export type BlogPost = {
   slug: string;
   title: string;
   description: string;
@@ -25,6 +25,6 @@ export interface BlogPost {
   category: string;
   related_tools: string[];
   og_image: string | null;
-}
+};
 
 export type BlogPostSummary = Omit<BlogPost, 'content'>;

@@ -1,6 +1,6 @@
 export type ToolCategory = 'pdf' | 'image';
 
-export interface ToolConfig {
+export type ToolConfig = {
   slug: string;
   name: string;
   description: string;
@@ -9,7 +9,7 @@ export interface ToolConfig {
   acceptedTypes: string;
   multiple: boolean;
   actionLabel: string;
-}
+};
 
 export const tools: Record<string, ToolConfig> = {
   'compress-pdf': {

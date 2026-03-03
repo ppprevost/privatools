@@ -6,10 +6,10 @@ import Button from '@/components/ui/Button';
 import { Download, CheckCircle } from 'lucide-react';
 import { fireConfetti } from '@/lib/confetti';
 
-interface SplitResult {
+type SplitResult = {
   filename: string;
   data: ArrayBuffer;
-}
+};
 
 export default function SplitPdf() {
   const [file, setFile] = useState<File | null>(null);

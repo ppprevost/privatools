@@ -1,7 +1,7 @@
 import * as RadixSlider from '@radix-ui/react-slider';
 import { cn } from '@/lib/utils';
 
-interface SliderProps {
+type SliderProps = {
   label: string;
   value: number;
   min: number;
@@ -10,7 +10,7 @@ interface SliderProps {
   unit?: string;
   onChange: (value: number) => void;
   className?: string;
-}
+};
 
 export default function Slider({
   label,
