@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://priva.tools/sitemap-index.xml
+Sitemap: https://priva.tools/video-sitemap.xml
