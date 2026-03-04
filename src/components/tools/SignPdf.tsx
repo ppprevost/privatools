@@ -80,7 +80,8 @@ export default function SignPdf() {
     const w = isInitials ? INITIALS_DISPLAY_W : SIGNATURE_DISPLAY_W;
     const h = isInitials ? INITIALS_DISPLAY_H : SIGNATURE_DISPLAY_H;
 
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const rand = crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
+    const id = `${Date.now()}-${rand}`;
     setPlacements((prev) => [
       ...prev,
       {
@@ -160,7 +161,11 @@ export default function SignPdf() {
     pdfDataRef.current = null;
   }, [worker]);
 
-  const ghostImage = activeGhost === 'initials' ? initialsDataUrl : activeGhost === 'signature' ? signatureDataUrl : null;
+  const ghostImageMap: Record<string, string | null> = {
+    initials: initialsDataUrl,
+    signature: signatureDataUrl,
+  };
+  const ghostImage = activeGhost ? ghostImageMap[activeGhost] : null;
   const ghostW = activeGhost === 'initials' ? INITIALS_DISPLAY_W : SIGNATURE_DISPLAY_W;
   const ghostH = activeGhost === 'initials' ? INITIALS_DISPLAY_H : SIGNATURE_DISPLAY_H;
 
