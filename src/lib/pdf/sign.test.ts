@@ -74,10 +74,7 @@ describe('signPdf', () => {
 
   const create1x1Png = () => {
     const b64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-    const binary = atob(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return bytes;
+    return new Uint8Array(Buffer.from(b64, 'base64'));
   };
 
   it('embeds a signature on page 1', async () => {
