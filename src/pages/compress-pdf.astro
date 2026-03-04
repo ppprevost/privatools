@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import CompressPdf from '../components/tools/CompressPdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'Is it safe to compress my PDF online?', answer: 'Yes. Priva.TOOLS processes everything in your browser. Your file is never uploaded to any server, so there is zero risk of data leakage.' },
@@ -33,22 +34,10 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">Why Compress PDFs with Priva.TOOLS?</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">100% Private</h3>
-          <p class="text-slate-600">Your PDF never leaves your device. Unlike other tools, we don't upload your files to any server. Processing happens entirely in your browser using WebAssembly.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">No File Size Limit</h3>
-          <p class="text-slate-600">Process PDFs up to 200 MB. No artificial limits, no premium upsells, no account needed.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Preserves Quality</h3>
-          <p class="text-slate-600">Our compression strips unnecessary metadata and optimizes internal structures while keeping your document visually identical.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Works Offline</h3>
-          <p class="text-slate-600">Since everything runs locally, you can compress PDFs even without an internet connection after the page loads.</p>
-        </div>
+        <FeatureItem title="100% Private" description="Your PDF never leaves your device. Unlike other tools, we don't upload your files to any server. Processing happens entirely in your browser using WebAssembly." />
+        <FeatureItem title="No File Size Limit" description="Process PDFs up to 200 MB. No artificial limits, no premium upsells, no account needed." />
+        <FeatureItem title="Preserves Quality" description="Our compression strips unnecessary metadata and optimizes internal structures while keeping your document visually identical." />
+        <FeatureItem title="Works Offline" description="Since everything runs locally, you can compress PDFs even without an internet connection after the page loads." />
       </div>
     </div>
 

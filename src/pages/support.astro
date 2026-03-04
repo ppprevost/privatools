@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 import { Heart } from 'lucide-react';
 
 const PAYPAL_LINK = import.meta.env.PUBLIC_PAYPAL_LINK;
@@ -26,16 +27,13 @@ const showDonation = !!PAYPAL_LINK;
           <h2 class="text-2xl font-black text-slate-900 mb-4">Why support?</h2>
           <div class="space-y-4">
             <div class="p-4 rounded-xl bg-slate-50 border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)]">
-              <h3 class="font-bold text-slate-900 mb-1">Server costs</h3>
-              <p>Hosting, domain, and CDN costs add up. Your support helps keep the site fast and available for everyone.</p>
+              <FeatureItem title="Server costs" description="Hosting, domain, and CDN costs add up. Your support helps keep the site fast and available for everyone." />
             </div>
             <div class="p-4 rounded-xl bg-slate-50 border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)]">
-              <h3 class="font-bold text-slate-900 mb-1">Development</h3>
-              <p>New tools, bug fixes, and performance improvements take time. Donations help fund continued development.</p>
+              <FeatureItem title="Development" description="New tools, bug fixes, and performance improvements take time. Donations help fund continued development." />
             </div>
             <div class="p-4 rounded-xl bg-slate-50 border-[3px] border-slate-900 shadow-[var(--shadow-brutalist-sm)]">
-              <h3 class="font-bold text-slate-900 mb-1">Staying independent</h3>
-              <p>No investors, no ads, no data harvesting. Your support helps Priva.TOOLS stay independent and privacy-first.</p>
+              <FeatureItem title="Staying independent" description="No investors, no ads, no data harvesting. Your support helps Priva.TOOLS stay independent and privacy-first." />
             </div>
           </div>
         </section>

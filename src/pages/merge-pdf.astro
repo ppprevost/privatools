@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import MergePdf from '../components/tools/MergePdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'Can I merge PDFs without uploading them?', answer: 'Yes. Priva.TOOLS processes everything in your browser. Your PDFs never leave your device.' },
@@ -32,14 +33,8 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">Why Merge PDFs with Priva.TOOLS?</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Complete Privacy</h3>
-          <p class="text-slate-600">Your documents are merged locally in your browser. No server ever sees your files. Perfect for confidential contracts, invoices, or personal documents.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">No Limits</h3>
-          <p class="text-slate-600">Merge as many PDFs as you want, with no page or file count restrictions. No premium plan, no watermarks.</p>
-        </div>
+        <FeatureItem title="Complete Privacy" description="Your documents are merged locally in your browser. No server ever sees your files. Perfect for confidential contracts, invoices, or personal documents." />
+        <FeatureItem title="No Limits" description="Merge as many PDFs as you want, with no page or file count restrictions. No premium plan, no watermarks." />
       </div>
     </div>
 

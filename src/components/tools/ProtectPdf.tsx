@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button';
 import { useWorker } from '@/hooks/useWorker';
 import { fireConfetti } from '@/lib/confetti';
 import { detectEncryption } from '@/lib/pdf/detect-encryption';
+import StatusMessage from '@/components/ui/StatusMessage';
+import AlertBanner from '@/components/ui/AlertBanner';
 import { ShieldAlert, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 
 export default function ProtectPdf() {
@@ -91,10 +93,9 @@ export default function ProtectPdf() {
           <FileCard file={file} onRemove={handleRemove} />
 
           {alreadyEncrypted && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 rounded-xl border-[3px] border-amber-400">
-              <ShieldAlert size={20} strokeWidth={2.5} className="text-amber-600 shrink-0" />
-              <p className="text-sm font-bold text-amber-800">This PDF is already password-protected. Protecting it again will apply a new password.</p>
-            </div>
+            <AlertBanner color="amber" icon={<ShieldAlert size={20} strokeWidth={2.5} className="text-amber-600 shrink-0" />}>
+              This PDF is already password-protected. Protecting it again will apply a new password.
+            </AlertBanner>
           )}
 
           {!resultBlob && (
@@ -172,7 +173,7 @@ export default function ProtectPdf() {
               )}
 
               {validationError && (
-                <p className="text-sm text-rose-600 font-bold text-center">{validationError}</p>
+                <StatusMessage variant="error">{validationError}</StatusMessage>
               )}
             </div>
           )}
@@ -180,12 +181,12 @@ export default function ProtectPdf() {
           {workerState.isProcessing && (
             <div className="space-y-2">
               <ProgressBar value={workerState.progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">Encrypting...</p>
+              <StatusMessage variant="loading">Encrypting...</StatusMessage>
             </div>
           )}
 
           {workerState.error && (
-            <p className="text-sm text-rose-600 font-bold text-center">{workerState.error}</p>
+            <StatusMessage variant="error">{workerState.error}</StatusMessage>
           )}
 
           {!workerState.isProcessing && !resultBlob && !workerState.error && (

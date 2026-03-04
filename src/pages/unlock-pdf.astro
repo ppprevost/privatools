@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import UnlockPdf from '../components/tools/UnlockPdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'Is it safe to unlock my PDF here?', answer: 'Yes. Priva.TOOLS processes everything in your browser. Your file and password never leave your device, so there is zero risk of interception.' },
@@ -34,22 +35,10 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">Why Unlock PDFs with Priva.TOOLS?</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">100% Private</h3>
-          <p class="text-slate-600">Your PDF and password never leave your device. Unlike other tools, we don't upload your files to any server. Decryption happens entirely in your browser using WebAssembly.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Instant Detection</h3>
-          <p class="text-slate-600">As soon as you drop a file, we instantly detect whether it is password-protected, so you know right away if a password is needed.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Preserves Content</h3>
-          <p class="text-slate-600">Unlocking only removes the password. Your document content, layout, images, and formatting stay exactly the same.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Works Offline</h3>
-          <p class="text-slate-600">Since everything runs locally, you can unlock PDFs even without an internet connection after the page loads.</p>
-        </div>
+        <FeatureItem title="100% Private" description="Your PDF and password never leave your device. Unlike other tools, we don't upload your files to any server. Decryption happens entirely in your browser using WebAssembly." />
+        <FeatureItem title="Instant Detection" description="As soon as you drop a file, we instantly detect whether it is password-protected, so you know right away if a password is needed." />
+        <FeatureItem title="Preserves Content" description="Unlocking only removes the password. Your document content, layout, images, and formatting stay exactly the same." />
+        <FeatureItem title="Works Offline" description="Since everything runs locally, you can unlock PDFs even without an internet connection after the page loads." />
       </div>
     </div>
 

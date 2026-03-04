@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import RemoveBackground from '../components/tools/RemoveBackground';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'Is background removal really free?', answer: 'Yes, completely free with no limits. No account, no watermark, no premium tier.' },
@@ -33,14 +34,8 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">How Does It Work?</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">AI in Your Browser</h3>
-          <p class="text-slate-600">We use an ONNX neural network model that runs directly in your browser via WebAssembly. The AI model is downloaded once and cached for future use.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">True Privacy</h3>
-          <p class="text-slate-600">Unlike most background removal tools, your image is never sent to any server. The AI processes your photo locally on your device.</p>
-        </div>
+        <FeatureItem title="AI in Your Browser" description="We use an ONNX neural network model that runs directly in your browser via WebAssembly. The AI model is downloaded once and cached for future use." />
+        <FeatureItem title="True Privacy" description="Unlike most background removal tools, your image is never sent to any server. The AI processes your photo locally on your device." />
       </div>
     </div>
 

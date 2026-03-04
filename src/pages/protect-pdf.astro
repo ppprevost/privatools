@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import ProtectPdf from '../components/tools/ProtectPdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'Is it safe to protect my PDF here?', answer: 'Yes. Priva.TOOLS processes everything in your browser using WebAssembly. Your file and password never leave your device.' },
@@ -34,22 +35,10 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">Why Protect PDFs with Priva.TOOLS?</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">100% Private</h3>
-          <p class="text-slate-600">Your PDF and password never leave your device. Unlike other tools, we don't upload your files to any server. Encryption happens entirely in your browser using WebAssembly.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Military-Grade Encryption</h3>
-          <p class="text-slate-600">256-bit AES encryption, the strongest available for PDF. Your documents are protected with the same standard used in banking and defense.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Fine-Grained Permissions</h3>
-          <p class="text-slate-600">Control exactly what recipients can do: allow or block printing, text extraction, and document modification.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">Works Offline</h3>
-          <p class="text-slate-600">Since everything runs locally, you can protect PDFs even without an internet connection after the page loads.</p>
-        </div>
+        <FeatureItem title="100% Private" description="Your PDF and password never leave your device. Unlike other tools, we don't upload your files to any server. Encryption happens entirely in your browser using WebAssembly." />
+        <FeatureItem title="Military-Grade Encryption" description="256-bit AES encryption, the strongest available for PDF. Your documents are protected with the same standard used in banking and defense." />
+        <FeatureItem title="Fine-Grained Permissions" description="Control exactly what recipients can do: allow or block printing, text extraction, and document modification." />
+        <FeatureItem title="Works Offline" description="Since everything runs locally, you can protect PDFs even without an internet connection after the page loads." />
       </div>
     </div>
 

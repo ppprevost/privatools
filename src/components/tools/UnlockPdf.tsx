@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button';
 import { useWorker } from '@/hooks/useWorker';
 import { fireConfetti } from '@/lib/confetti';
 import { detectEncryption } from '@/lib/pdf/detect-encryption';
+import StatusMessage from '@/components/ui/StatusMessage';
+import AlertBanner from '@/components/ui/AlertBanner';
 import { CheckCircle, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function UnlockPdf() {
@@ -69,22 +71,20 @@ export default function UnlockPdf() {
           <FileCard file={file} onRemove={handleRemove} />
 
           {detecting && (
-            <p className="text-sm text-slate-500 text-center font-medium">Checking encryption...</p>
+            <StatusMessage variant="loading">Checking encryption...</StatusMessage>
           )}
 
           {isEncrypted === false && !resultBlob && (
-            <div className="flex items-center justify-center gap-3 px-4 py-3 bg-emerald-50 rounded-xl border-[3px] border-emerald-400">
-              <CheckCircle size={20} strokeWidth={2.5} className="text-emerald-600 shrink-0" />
-              <p className="text-sm font-bold text-emerald-800">This PDF is not password-protected.</p>
-            </div>
+            <AlertBanner color="emerald" icon={<CheckCircle size={20} strokeWidth={2.5} className="text-emerald-600 shrink-0" />} centered>
+              This PDF is not password-protected.
+            </AlertBanner>
           )}
 
           {isEncrypted === true && !resultBlob && (
             <>
-              <div className="flex items-center gap-3 px-4 py-3 bg-rose-50 rounded-xl border-[3px] border-rose-400">
-                <Lock size={20} strokeWidth={2.5} className="text-rose-600 shrink-0" />
-                <p className="text-sm font-bold text-rose-800">This PDF is password-protected. Enter the password to unlock it.</p>
-              </div>
+              <AlertBanner color="rose" icon={<Lock size={20} strokeWidth={2.5} className="text-rose-600 shrink-0" />}>
+                This PDF is password-protected. Enter the password to unlock it.
+              </AlertBanner>
 
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">Password</label>
@@ -112,12 +112,12 @@ export default function UnlockPdf() {
           {workerState.isProcessing && (
             <div className="space-y-2">
               <ProgressBar value={workerState.progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">Decrypting...</p>
+              <StatusMessage variant="loading">Decrypting...</StatusMessage>
             </div>
           )}
 
           {workerState.error && (
-            <p className="text-sm text-rose-600 font-bold text-center">{workerState.error}</p>
+            <StatusMessage variant="error">{workerState.error}</StatusMessage>
           )}
 
           {isEncrypted === true && !workerState.isProcessing && !resultBlob && !workerState.error && (

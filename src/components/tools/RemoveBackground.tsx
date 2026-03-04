@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import StatusMessage from '@/components/ui/StatusMessage';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
 import { fireConfetti } from '@/lib/confetti';
@@ -81,13 +82,13 @@ export default function RemoveBackground() {
           {isProcessing && (
             <div className="space-y-2">
               <ProgressBar value={progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">
+              <StatusMessage variant="loading">
                 {progress < 30 ? 'Loading AI model...' : 'Removing background...'}
-              </p>
+              </StatusMessage>
             </div>
           )}
 
-          {error && <p className="text-sm text-rose-600 font-bold text-center">{error}</p>}
+          {error && <StatusMessage variant="error">{error}</StatusMessage>}
 
           {!isProcessing && !resultBlob && (
             <div className="flex justify-center">

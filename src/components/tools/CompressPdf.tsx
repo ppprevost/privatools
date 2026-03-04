@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import StatusMessage from '@/components/ui/StatusMessage';
 import DownloadButton from '@/components/ui/DownloadButton';
 import Button from '@/components/ui/Button';
 import { useWorker } from '@/hooks/useWorker';
@@ -46,12 +47,12 @@ export default function CompressPdf() {
           {worker.isProcessing && (
             <div className="space-y-2">
               <ProgressBar value={worker.progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">Compressing...</p>
+              <StatusMessage variant="loading">Compressing...</StatusMessage>
             </div>
           )}
 
           {worker.error && (
-            <p className="text-sm text-rose-600 font-bold text-center">{worker.error}</p>
+            <StatusMessage variant="error">{worker.error}</StatusMessage>
           )}
 
           {!worker.isProcessing && !resultBlob && (

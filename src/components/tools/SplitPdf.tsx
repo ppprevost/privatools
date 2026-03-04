@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import DropZone from '@/components/ui/DropZone';
 import FileCard from '@/components/ui/FileCard';
 import ProgressBar from '@/components/ui/ProgressBar';
+import StatusMessage from '@/components/ui/StatusMessage';
 import Button from '@/components/ui/Button';
 import { Download, CheckCircle } from 'lucide-react';
 import { fireConfetti } from '@/lib/confetti';
@@ -88,11 +89,11 @@ export default function SplitPdf() {
           {isProcessing && (
             <div className="space-y-2">
               <ProgressBar value={progress} />
-              <p className="text-sm text-slate-500 text-center font-medium">Splitting...</p>
+              <StatusMessage variant="loading">Splitting...</StatusMessage>
             </div>
           )}
 
-          {error && <p className="text-sm text-rose-600 font-bold text-center">{error}</p>}
+          {error && <StatusMessage variant="error">{error}</StatusMessage>}
 
           {!isProcessing && results.length === 0 && (
             <div className="flex justify-center">

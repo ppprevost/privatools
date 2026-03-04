@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import CompressImage from '../components/tools/CompressImage';
+import FeatureItem from '../components/ui/FeatureItem.astro';
 
 const faqItems = [
   { question: 'How does image compression work?', answer: 'For PNG files, we reduce the color palette (quantization). For JPG and WebP, we use lossy compression that removes visual data the human eye barely notices. Both methods significantly reduce file size.' },
@@ -34,14 +35,8 @@ const faqItems = [
     <div>
       <h2 class="text-2xl font-black text-slate-900 mb-4">Smart Compression by Format</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">PNG Compression</h3>
-          <p class="text-slate-600">Uses color quantization (similar to TinyPNG) to reduce PNG file size by up to 90% while keeping transparency. The quality slider controls the number of colors in the palette.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">JPG & WebP Compression</h3>
-          <p class="text-slate-600">Uses lossy compression with adjustable quality. Lower quality means smaller files. The live preview lets you find the sweet spot instantly.</p>
-        </div>
+        <FeatureItem title="PNG Compression" description="Uses color quantization (similar to TinyPNG) to reduce PNG file size by up to 90% while keeping transparency. The quality slider controls the number of colors in the palette." />
+        <FeatureItem title="JPG & WebP Compression" description="Uses lossy compression with adjustable quality. Lower quality means smaller files. The live preview lets you find the sweet spot instantly." />
       </div>
     </div>
 
