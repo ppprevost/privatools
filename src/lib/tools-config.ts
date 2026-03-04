@@ -112,6 +112,16 @@ export const tools: Record<string, ToolConfig> = {
     multiple: false,
     actionLabel: 'Crop',
   },
+  'sign-pdf': {
+    slug: 'sign-pdf',
+    name: 'Sign PDF',
+    description: 'Add your signature or initials to any PDF document.',
+    icon: 'PenLine',
+    category: 'pdf',
+    acceptedTypes: '.pdf',
+    multiple: false,
+    actionLabel: 'Sign',
+  },
   'remove-background': {
     slug: 'remove-background',
     name: 'Remove Background',

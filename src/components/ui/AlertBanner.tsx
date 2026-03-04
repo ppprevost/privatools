@@ -8,9 +8,9 @@ type AlertBannerProps = {
 };
 
 const colorClasses: Record<string, { container: string; text: string }> = {
-  emerald: { container: 'bg-emerald-50 border-emerald-400', text: 'text-emerald-800' },
-  rose: { container: 'bg-rose-50 border-rose-400', text: 'text-rose-800' },
-  amber: { container: 'bg-amber-50 border-amber-400', text: 'text-amber-800' },
+  emerald: { container: 'bg-emerald-50 border-slate-900', text: 'text-emerald-800' },
+  rose: { container: 'bg-rose-50 border-slate-900', text: 'text-rose-800' },
+  amber: { container: 'bg-amber-50 border-slate-900', text: 'text-amber-800' },
 };
 
 export default function AlertBanner({ color, icon, children, centered }: Readonly<AlertBannerProps>) {

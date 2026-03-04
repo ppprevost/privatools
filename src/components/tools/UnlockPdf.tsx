@@ -15,6 +15,7 @@ export default function UnlockPdf() {
   const [file, setFile] = useState<File | null>(null);
   const [isEncrypted, setIsEncrypted] = useState<boolean | null>(null);
   const [detecting, setDetecting] = useState(false);
+  const [detectError, setDetectError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,12 +29,17 @@ export default function UnlockPdf() {
     setFile(f);
     workerReset();
     setIsEncrypted(null);
+    setDetectError(null);
     setPassword('');
     setDetecting(true);
 
     const buffer = await f.arrayBuffer();
     const status = await detectEncryption(buffer);
-    setIsEncrypted(status.isEncrypted);
+    if (status.error) {
+      setDetectError(status.error);
+    } else {
+      setIsEncrypted(status.isEncrypted);
+    }
     setDetecting(false);
   }, [workerReset]);
 
@@ -59,6 +65,7 @@ export default function UnlockPdf() {
     setFile(null);
     workerReset();
     setIsEncrypted(null);
+    setDetectError(null);
     setPassword('');
   }, [workerReset]);
 
@@ -72,6 +79,10 @@ export default function UnlockPdf() {
 
           {detecting && (
             <StatusMessage variant="loading">Checking encryption...</StatusMessage>
+          )}
+
+          {detectError && (
+            <StatusMessage variant="error">{detectError}</StatusMessage>
           )}
 
           {isEncrypted === false && !resultBlob && (
@@ -100,7 +111,7 @@ export default function UnlockPdf() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 border-[2px] border-slate-900 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer"
                   >
                     {showPassword ? <EyeOff size={18} strokeWidth={2.5} /> : <Eye size={18} strokeWidth={2.5} />}
                   </button>

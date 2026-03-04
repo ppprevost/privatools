@@ -1,0 +1,59 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import SignPdf from '../components/tools/SignPdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
+
+const faqItems = [
+  { question: 'Is my PDF uploaded to a server?', answer: 'No. Priva.TOOLS processes everything in your browser. Your PDF and signature never leave your device.' },
+  { question: 'What signature methods are available?', answer: 'You can draw your signature with a mouse or finger, type your name using handwriting fonts, or upload an image of your signature.' },
+  { question: 'Can I add both a signature and initials?', answer: 'Yes. After creating your signature, you can add initials and place both on any page of the document.' },
+  { question: 'Does this work on mobile?', answer: 'Yes. The drawing pad and placement tools are fully touch-compatible and work on phones and tablets.' },
+  { question: 'Is this a legally binding signature?', answer: 'This tool creates a visual representation of your signature on the PDF. Legal validity depends on your jurisdiction and the agreement between parties. For legally binding electronic signatures with audit trails, consider dedicated e-signature services.' },
+];
+---
+
+<ToolLayout
+  title="Sign PDF Online Free - Draw, Type or Upload Signature | Priva.TOOLS"
+  heading="Sign PDF"
+  description="Add your signature or initials to any PDF document. Draw, type, or upload your signature. Free, no upload, 100% browser-based."
+  relatedSlugs={['protect-pdf', 'merge-pdf', 'compress-pdf']}
+  faqItems={faqItems}
+  toolSlug="sign-pdf"
+>
+  <SignPdf client:only="react" />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Sign a PDF Online</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Drop your PDF file in the box above or click "Browse" to select it.</li>
+        <li>Create your signature by drawing, typing your name, or uploading an image.</li>
+        <li>Click on the PDF page where you want to place your signature.</li>
+        <li>Drag to reposition or resize as needed. Add initials on other pages if required.</li>
+        <li>Click "Sign PDF" and download your signed document.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Why Sign PDFs with Priva.TOOLS?</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <FeatureItem title="100% Private" description="Your PDF and signature never leave your device. Unlike DocuSign, Adobe Sign, or SmallPDF, we don't upload your files to any server. Everything runs locally in your browser." />
+        <FeatureItem title="Three Signature Methods" description="Draw your signature freehand, type your name with elegant handwriting fonts, or upload a photo of your signature. All three methods produce a clean, professional result." />
+        <FeatureItem title="Signature + Initials" description="Add both your full signature and initials to different pages. Place multiple signatures or initials wherever needed on the document." />
+        <FeatureItem title="Works Offline" description="Since everything runs locally, you can sign PDFs even without an internet connection after the page loads." />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+</ToolLayout>

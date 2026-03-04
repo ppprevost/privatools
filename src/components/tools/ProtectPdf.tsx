@@ -39,6 +39,7 @@ export default function ProtectPdf() {
     const buffer = await f.arrayBuffer();
     const status = await detectEncryption(buffer);
     if (status.isEncrypted) setAlreadyEncrypted(true);
+    if (status.error) setValidationError(status.error);
   }, [workerReset]);
 
   const handleProtect = useCallback(async () => {
@@ -113,7 +114,7 @@ export default function ProtectPdf() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 border-[2px] border-slate-900 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer"
                   >
                     {showPassword ? <EyeOff size={18} strokeWidth={2.5} /> : <Eye size={18} strokeWidth={2.5} />}
                   </button>
@@ -131,14 +132,15 @@ export default function ProtectPdf() {
                 />
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setShowAdvanced((s) => !s)}
-                className="flex items-center gap-1 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
               >
                 {showAdvanced ? <ChevronUp size={16} strokeWidth={2.5} /> : <ChevronDown size={16} strokeWidth={2.5} />}
                 Advanced options
-              </button>
+              </Button>
 
               {showAdvanced && (
                 <div className="space-y-4 p-4 bg-slate-50 rounded-xl border-[2px] border-slate-200">
