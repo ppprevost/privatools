@@ -44,6 +44,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['dist/', '.astro/', 'node_modules/', '.claude/hooks/', 'public/pdfjs/'],
+    ignores: ['dist/', '.astro/', 'node_modules/', '.claude/hooks/'],
   },
 );

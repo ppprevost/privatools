@@ -20,8 +20,11 @@ let pdfjsReady: Promise<typeof import('pdfjs-dist')> | null = null;
 
 const getPdfjs = () => {
   if (!pdfjsReady) {
-    pdfjsReady = import('pdfjs-dist').then((mod) => {
-      mod.GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.min.mjs';
+    pdfjsReady = Promise.all([
+      import('pdfjs-dist'),
+      import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+    ]).then(([mod, workerModule]) => {
+      mod.GlobalWorkerOptions.workerSrc = workerModule.default;
       return mod;
     });
   }
