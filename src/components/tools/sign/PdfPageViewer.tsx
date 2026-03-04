@@ -36,11 +36,13 @@ export default function PdfPageViewer({
     if (!canvas) return;
 
     let cancelled = false;
-    renderPage(canvas, pageIndex).then((info) => {
-      if (!cancelled) {
-        setDimensions({ width: info.widthPx, height: info.heightPx });
-      }
-    });
+    renderPage(canvas, pageIndex)
+      .then((info) => {
+        if (!cancelled) setDimensions({ width: info.widthPx, height: info.heightPx });
+      })
+      .catch((err) => {
+        if (!cancelled) console.error('Failed to render page:', err);
+      });
 
     return () => { cancelled = true; };
   }, [pageIndex, renderPage]);

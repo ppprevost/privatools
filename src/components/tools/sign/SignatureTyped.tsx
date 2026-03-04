@@ -25,9 +25,8 @@ const ensureFontsLoaded = () => {
           .load()
           .then((loaded) => document.fonts.add(loaded)),
       ),
-    ).then(() => undefined).catch((err) => {
+    ).then(() => undefined).catch(() => {
       fontsPromise = null;
-      return Promise.reject(err);
     });
   }
   return fontsPromise;
