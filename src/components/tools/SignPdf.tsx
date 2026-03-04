@@ -127,6 +127,7 @@ export default function SignPdf() {
         );
 
         const base64 = p.dataUrl.split(',')[1];
+        if (!base64) throw new Error(`Invalid signature data URL for placement ${p.id}`);
         const binary = atob(base64);
         const buf = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) buf[i] = binary.charCodeAt(i);
