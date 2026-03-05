@@ -36,6 +36,12 @@ enum EditOp {
         font_size: f64,
         x: f64,
         y: f64,
+        #[serde(default)]
+        bold: bool,
+        #[serde(default)]
+        italic: bool,
+        #[serde(default)]
+        color: Option<[f64; 3]>,
     },
     FormText {
         #[serde(rename = "fieldName")]
@@ -187,8 +193,8 @@ fn apply_op(doc: &mut Document, op: EditOp) -> Result<(), String> {
         EditOp::Highlight { page, quad_points, color } => {
             add_highlight(doc, page, &quad_points, color)
         }
-        EditOp::TextOverlay { page, cover_rect, text, font_size, x, y } => {
-            add_text_overlay(doc, page, cover_rect, &text, font_size, x, y)
+        EditOp::TextOverlay { page, cover_rect, text, font_size, x, y, bold, italic, color } => {
+            add_text_overlay(doc, page, cover_rect, &text, font_size, x, y, bold, italic, color)
         }
         EditOp::FormText { field_name, value } => {
             set_form_text(doc, &field_name, &value)
@@ -313,14 +319,26 @@ fn add_text_overlay(
     font_size: f64,
     x: f64,
     y: f64,
+    bold: bool,
+    italic: bool,
+    color: Option<[f64; 3]>,
 ) -> Result<(), String> {
     let page_id = get_page_id(doc, page)?;
 
+    let (font_alias, base_font): (&[u8], &[u8]) = match (bold, italic) {
+        (true, true)  => (b"HelvBI", b"Helvetica-BoldOblique"),
+        (true, false) => (b"HelvB",  b"Helvetica-Bold"),
+        (false, true) => (b"HelI",   b"Helvetica-Oblique"),
+        _             => (b"Helv",   b"Helvetica"),
+    };
+
+    let [r, g, b] = color.unwrap_or([0.0, 0.0, 0.0]);
     let escaped = escape_pdf_string(text);
+    let font_alias_str = std::str::from_utf8(font_alias).unwrap_or("Helv");
     let stream_content = format!(
-        "q 1 1 1 rg {} {} {} {} re f Q BT /Helv {} Tf {} {} Td ({}) Tj ET",
+        "q 1 1 1 rg {} {} {} {} re f Q BT /{} {} Tf {:.4} {:.4} {:.4} rg {} {} Td ({}) Tj ET",
         cover_rect[0], cover_rect[1], cover_rect[2], cover_rect[3],
-        font_size, x, y, escaped
+        font_alias_str, font_size, r, g, b, x, y, escaped
     );
 
     let stream = Stream::new(
@@ -331,7 +349,7 @@ fn add_text_overlay(
     );
     let stream_id = doc.add_object(Object::Stream(stream));
 
-    ensure_helv_font(doc, page_id)?;
+    ensure_font_on_page(doc, page_id, font_alias, base_font)?;
     prepend_content_stream(doc, page_id, stream_id)
 }
 
