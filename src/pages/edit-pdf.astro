@@ -1,0 +1,58 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import EditPdf from '../components/tools/EditPdf';
+import FeatureItem from '../components/ui/FeatureItem.astro';
+
+const faqItems = [
+  { question: 'Is my PDF uploaded to a server?', answer: 'No. All editing happens in your browser using WebAssembly. Your file never leaves your device.' },
+  { question: 'What can I edit in a PDF?', answer: 'You can add text boxes, highlight text, fill in form fields, and overlay new text on top of existing content.' },
+  { question: 'Does this work with encrypted PDFs?', answer: 'No. Password-protected PDFs must be unlocked first using the Unlock PDF tool.' },
+  { question: 'Will the fonts look correct?', answer: 'Text boxes and overlays use Helvetica, a standard PDF font available in all PDF viewers.' },
+  { question: 'Can I fill in PDF forms?', answer: 'Yes. When you open a PDF with AcroForm fields, the Form tool will detect them automatically so you can fill them in.' },
+];
+---
+
+<ToolLayout
+  title="Edit PDF Online Free - Add Text, Highlight, Fill Forms | Priva.TOOLS"
+  heading="Edit PDF"
+  description="Add text boxes, highlight content, and fill in forms in any PDF. 100% private, no upload, powered by WebAssembly."
+  relatedSlugs={['sign-pdf', 'protect-pdf', 'compress-pdf']}
+  faqItems={faqItems}
+  toolSlug="edit-pdf"
+>
+  <EditPdf client:only="react" />
+
+  <section class="mt-16 space-y-12 text-left" slot="seo-content">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">How to Edit a PDF Online</h2>
+      <ol class="list-decimal list-inside space-y-2 text-slate-600 font-medium">
+        <li>Drop your PDF file in the box above or click "Browse" to select it.</li>
+        <li>Choose a tool: Text Box, Highlight, Edit Text, or Form.</li>
+        <li>Click or select on the PDF to apply your edits.</li>
+        <li>Click "Save PDF" and download your edited document.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Why Edit PDFs with Priva.TOOLS?</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <FeatureItem title="100% Private" description="Your PDF is never uploaded to any server. All editing is done locally in your browser using Rust-compiled WebAssembly." />
+        <FeatureItem title="Text Box & Highlights" description="Add text annotations anywhere and highlight important sections with a single click or selection." />
+        <FeatureItem title="Form Filling" description="Automatically detects AcroForm fields in interactive PDFs so you can fill them directly in your browser." />
+        <FeatureItem title="Works Offline" description="After the page loads, you can edit PDFs without an internet connection." />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 mb-4">Frequently Asked Questions</h2>
+      <dl class="space-y-4">
+        {faqItems.map(({ question, answer }) => (
+          <div>
+            <dt class="font-bold text-slate-900">{question}</dt>
+            <dd class="text-slate-600 mt-1">{answer}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+</ToolLayout>

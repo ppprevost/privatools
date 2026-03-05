@@ -122,6 +122,16 @@ export const tools: Record<string, ToolConfig> = {
     multiple: false,
     actionLabel: 'Sign',
   },
+  'edit-pdf': {
+    slug: 'edit-pdf',
+    name: 'Edit PDF',
+    description: 'Add text, highlights and fill forms in any PDF. 100% private, no upload.',
+    icon: 'FilePen',
+    category: 'pdf',
+    acceptedTypes: '.pdf',
+    multiple: false,
+    actionLabel: 'Edit',
+  },
   'remove-background': {
     slug: 'remove-background',
     name: 'Remove Background',
