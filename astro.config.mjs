@@ -13,7 +13,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: {
-        '@pdf-editor': new URL('./crates/pdf-editor/pkg', import.meta.url).pathname,
+        '@pdf-editor': './crates/pdf-editor/pkg',
       },
     },
   },
