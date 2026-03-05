@@ -34,6 +34,10 @@ export default function SignPdf() {
   const pdfDataRef = useRef<ArrayBuffer | null>(null);
   const pageInfoRef = useRef<Map<number, StoredPageInfo>>(new Map());
 
+  useEffect(() => {
+    document.getElementById('dropzone-skeleton')?.remove();
+  }, []);
+
   const pdf = usePdfRenderer();
 
   const worker = useWorker({

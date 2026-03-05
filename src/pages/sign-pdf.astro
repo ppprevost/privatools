@@ -2,6 +2,7 @@
 import ToolLayout from '../layouts/ToolLayout.astro';
 import SignPdf from '../components/tools/SignPdf';
 import FeatureItem from '../components/ui/FeatureItem.astro';
+import DropZoneSkeleton from '../components/ui/DropZoneSkeleton.astro';
 
 const faqItems = [
   { question: 'Is my PDF uploaded to a server?', answer: 'No. Priva.TOOLS processes everything in your browser. Your PDF and signature never leave your device.' },
@@ -20,6 +21,7 @@ const faqItems = [
   faqItems={faqItems}
   toolSlug="sign-pdf"
 >
+  <DropZoneSkeleton />
   <SignPdf client:only="react" />
 
   <section class="mt-16 space-y-12 text-left" slot="seo-content">
