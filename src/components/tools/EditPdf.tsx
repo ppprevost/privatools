@@ -68,7 +68,7 @@ import ZoomControls from './edit/ZoomControls';
 import PageNavigator from './sign/PageNavigator';
 import { FilePen } from 'lucide-react';
 
-type Phase = 'upload' | 'edit' | 'done';
+type Phase = 'upload' | 'loading' | 'edit' | 'done';
 
 const INITIAL_HISTORY: EditOp[][] = [[]];
 
@@ -93,6 +93,10 @@ export default function EditPdf() {
   historyIndexRef.current = historyIndex;
 
   const ops = history[historyIndex];
+
+  useEffect(() => {
+    document.getElementById('dropzone-skeleton')?.remove();
+  }, []);
 
   const pdf = usePdfRenderer();
 
@@ -162,6 +166,7 @@ export default function EditPdf() {
     if (!f) return;
 
     setFile(f);
+    setPhase('loading');
     resetHistory();
     setFormFields([]);
     setActiveTool('cursor');
@@ -175,6 +180,7 @@ export default function EditPdf() {
     const enc = await detectEncryption(buffer);
     if (enc.isEncrypted) {
       setEncryptionError('This PDF is password-protected. Please unlock it first.');
+      setPhase('upload');
       return;
     }
 
@@ -238,6 +244,7 @@ export default function EditPdf() {
       }
       if (e.key === 'Escape') {
         setIsFullscreen(false);
+        setActiveTool('cursor');
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -280,16 +287,41 @@ export default function EditPdf() {
     <div className="space-y-6">
       {phase === 'upload' && <DropZone accept=".pdf" onFiles={handleFiles} compact />}
 
+      {phase === 'loading' && file && (
+        <div className="rounded-xl border-[3px] border-slate-900 bg-white shadow-[var(--shadow-brutalist-sm)] px-8 py-10 flex flex-col items-center gap-5">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            {/* Page shadow */}
+            <rect x="14" y="10" width="36" height="44" rx="3" fill="#e2e8f0" />
+            {/* Page */}
+            <rect x="12" y="8" width="36" height="44" rx="3" fill="white" stroke="#0f172a" strokeWidth="2.5" />
+            {/* Fold corner */}
+            <path d="M36 8 L48 20 L36 20 Z" fill="#e2e8f0" stroke="#0f172a" strokeWidth="2" strokeLinejoin="round" />
+            {/* Text lines */}
+            <line x1="19" y1="27" x2="41" y2="27" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+            <line x1="19" y1="33" x2="41" y2="33" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+            <line x1="19" y1="39" x2="33" y2="39" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+            {/* Spinner ring */}
+            <circle cx="48" cy="48" r="12" stroke="#e2e8f0" strokeWidth="3" />
+            <path d="M48 36 a12 12 0 0 1 12 12" stroke="#6366f1" strokeWidth="3" strokeLinecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 48 48" to="360 48 48" dur="0.9s" repeatCount="indefinite" />
+            </path>
+          </svg>
+          <div className="text-center space-y-1">
+            <p className="font-bold text-slate-900 text-sm truncate max-w-xs">{file.name}</p>
+            <p className="text-slate-500 text-sm">Analyse du PDF en cours...</p>
+          </div>
+        </div>
+      )}
+
       {encryptionError && (
         <StatusMessage variant="error">{encryptionError}</StatusMessage>
       )}
 
-      {file && phase !== 'upload' && (
+      {file && phase !== 'upload' && phase !== 'loading' && (
         <>
           <FileCard file={file} onRemove={handleRemove} />
 
           {pdf.error && <StatusMessage variant="error">{pdf.error}</StatusMessage>}
-          {pdf.isLoading && <StatusMessage variant="loading">Loading PDF...</StatusMessage>}
 
           {phase === 'edit' && !worker.isProcessing && (
             <>
@@ -306,7 +338,7 @@ export default function EditPdf() {
                 <StatusMessage variant="info">Click anywhere on the page to add a text box.</StatusMessage>
               )}
               {activeTool === 'highlight' && (
-                <StatusMessage variant="info">Select text on the page to highlight it.</StatusMessage>
+                <StatusMessage variant="info">Select text to highlight it. Press Esc to stop.</StatusMessage>
               )}
               {activeTool === 'edit-text' && (
                 <StatusMessage variant="info">Click on existing text to edit it.</StatusMessage>

@@ -34,6 +34,7 @@ export default function EditablePageViewer({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1.0);
   const [isDragging, setIsDragging] = useState(false);
+  const [spanTooltip, setSpanTooltip] = useState<{ x: number; y: number; font: string; size: string; bold: boolean; italic: boolean } | null>(null);
   const pageInfoRef = useRef(pageInfo);
   pageInfoRef.current = pageInfo;
 
@@ -215,6 +216,8 @@ export default function EditablePageViewer({
 
   const handleMouseDown = useCallback((e: MouseEvent) => {
     if (activeTool === 'highlight') return;
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
     dragRef.current = { active: true, lastX: e.clientX, lastY: e.clientY, moved: false };
     setIsDragging(true);
     e.preventDefault();
@@ -282,6 +285,33 @@ export default function EditablePageViewer({
     return () => window.removeEventListener('mouseup', onWindowMouseUp);
   }, [activeTool, pageIndex, onAddOp, pageInfo]);
 
+  // --- Edit-text: hover tooltip ---
+  const handleTextLayerMouseOver = useCallback((e: MouseEvent) => {
+    if (activeTool !== 'edit-text') return;
+    const target = e.target as HTMLElement;
+    if (target.tagName !== 'SPAN') return;
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const vpRect = vp.getBoundingClientRect();
+    const sr = target.getBoundingClientRect();
+    const info = pageInfoRef.current;
+    const s = scaleRef.current;
+    const { x: px, y: py } = panRef.current;
+    const cs = window.getComputedStyle(target);
+    const fontSizeCssPx = parseFloat(cs.fontSize) || 12;
+    const fontSizePt = Math.round(fontSizeCssPx * (info.widthPt / info.widthPx) * 10) / 10;
+    const bold = parseInt(cs.fontWeight) >= 600 || cs.fontWeight === 'bold' || cs.fontFamily.toLowerCase().includes('bold');
+    const italic = cs.fontStyle === 'italic' || cs.fontStyle === 'oblique';
+    const rawFamily = cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+    const tooltipX = (sr.left - vpRect.left - px) / s;
+    const tooltipY = (sr.top - vpRect.top - py) / s;
+    setSpanTooltip({ x: tooltipX, y: tooltipY, font: rawFamily, size: `${fontSizePt}pt`, bold, italic });
+  }, [activeTool]);
+
+  const handleTextLayerMouseOut = useCallback((e: MouseEvent) => {
+    if ((e.target as HTMLElement).tagName === 'SPAN') setSpanTooltip(null);
+  }, []);
+
   // --- Edit-text: click on text span ---
   const handleTextLayerClick = useCallback((e: MouseEvent) => {
     if (activeTool !== 'edit-text') return;
@@ -299,7 +329,24 @@ export default function EditablePageViewer({
     const h = (sr.height || 16) / s;
     const info = pageInfo;
     const c = toPdfCoords(cx, cy, w, h, info.widthPx, info.heightPx, info.widthPt, info.heightPt);
-    onAddOp({ type: 'text_overlay', page: pageIndex, coverRect: [c.xPdf, c.yPdf, c.widthPdf, c.heightPdf], text: target.textContent ?? '', fontSize: 12, x: c.xPdf, y: c.yPdf + c.heightPdf });
+
+    const cs = window.getComputedStyle(target);
+    const fontSizeCssPx = parseFloat(cs.fontSize) || 12;
+    const fontSizePt = fontSizeCssPx * (info.widthPt / info.widthPx);
+    const bold = parseInt(cs.fontWeight) >= 600 || cs.fontWeight === 'bold' || cs.fontWeight === 'bolder'
+      || cs.fontFamily.toLowerCase().includes('bold');
+    const italic = cs.fontStyle === 'italic' || cs.fontStyle === 'oblique';
+    const colorMatch = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(cs.color);
+    const alpha = colorMatch?.[4] !== undefined ? parseFloat(colorMatch[4]) : 1;
+    const color: [number, number, number] = (colorMatch && alpha > 0)
+      ? [parseInt(colorMatch[1]) / 255, parseInt(colorMatch[2]) / 255, parseInt(colorMatch[3]) / 255]
+      : [0, 0, 0];
+
+    // baseline: span-top in PDF coords minus ascent (Helvetica ascent ≈ 0.72 × em)
+    const baseline = c.yPdf + c.heightPdf - fontSizePt * 0.72;
+    // coverRect sized to just the visible text (ascent + descent), not the full pdfjs line-height
+    const coverRect: [number, number, number, number] = [c.xPdf, baseline - fontSizePt * 0.28, c.widthPdf, fontSizePt * 1.0];
+    onAddOp({ type: 'text_overlay', page: pageIndex, coverRect, text: target.textContent ?? '', fontSize: fontSizePt, x: c.xPdf, y: baseline, bold, italic, color });
   }, [activeTool, pageIndex, onAddOp, pageInfo]);
 
   const viewportHeight = heightOverride ?? (baseDims.h > 0 ? Math.min(baseDims.h, 650) : 500);
@@ -334,14 +381,33 @@ export default function EditablePageViewer({
               className="absolute inset-0 pdf-text-layer"
               style={{ pointerEvents: textPointerEvents }}
               onClick={handleTextLayerClick}
+              onMouseOver={handleTextLayerMouseOver}
+              onMouseOut={handleTextLayerMouseOut}
             />
+            {spanTooltip && activeTool === 'edit-text' && (
+              <div
+                className="absolute pointer-events-none z-20 bg-slate-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg"
+                style={{ left: spanTooltip.x, top: spanTooltip.y - 36 }}
+              >
+                <span className="font-mono">{spanTooltip.font}</span>
+                {' · '}{spanTooltip.size}
+                {spanTooltip.bold && <span className="ml-1 font-bold">B</span>}
+                {spanTooltip.italic && <span className="ml-1 italic">I</span>}
+              </div>
+            )}
             <AnnotationLayer ops={ops} pageIndex={pageIndex} dimensions={pageInfo} onUpdateOp={onUpdateOp} onDeleteOp={onDeleteOp} viewScale={scale} />
           </>
         )}
       </div>
       {baseDims.w === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-slate-400 text-sm font-medium">Loading...</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="#cbd5e1" strokeWidth="3" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="#6366f1" strokeWidth="3" strokeLinecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+            </path>
+          </svg>
+          <span className="text-slate-400 text-xs font-medium">Chargement...</span>
         </div>
       )}
     </div>

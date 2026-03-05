@@ -32,7 +32,7 @@ export default function ToolPalette({ activeTool, onToolChange, hasFormFields, c
             disabled={isDisabled}
             title={compact ? label : undefined}
             className={[
-              'flex items-center rounded-lg border-2 font-semibold transition-colors',
+              'relative flex items-center rounded-lg border-2 font-semibold transition-colors',
               compact ? 'p-2' : 'gap-1.5 px-3 py-2 text-sm',
               isActive
                 ? 'bg-indigo-50 border-slate-900 text-slate-900'
@@ -42,6 +42,9 @@ export default function ToolPalette({ activeTool, onToolChange, hasFormFields, c
           >
             {icon}
             {!compact && label}
+            {isActive && !compact && id !== 'cursor' && id !== 'scroll' && (
+              <span className="ml-1 text-[10px] font-bold text-slate-400 border border-slate-300 rounded px-1 leading-tight">Esc</span>
+            )}
           </button>
         );
       })}

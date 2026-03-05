@@ -69,7 +69,7 @@ export default function AnnotationLayer({ ops, pageIndex, dimensions, onUpdateOp
           return <HighlightAnnot key={k} op={op} dims={dimensions} />;
         }
         if (op.type === 'text_overlay' && op.page === pageIndex) {
-          return <TextOverlayAnnot key={k} op={op} dims={dimensions} onUpdate={(updated) => onUpdateOp(index, updated)} />;
+          return <TextOverlayAnnot key={k} op={op} dims={dimensions} viewScale={viewScale} onUpdate={(updated) => onUpdateOp(index, updated)} onDelete={() => onDeleteOp(index)} />;
         }
         return null;
       })}
@@ -345,23 +345,161 @@ function HighlightAnnot({ op, dims }: Readonly<HighlightAnnotProps>) {
 type TextOverlayAnnotProps = {
   op: Extract<EditOp, { type: 'text_overlay' }>;
   dims: PageDimensions;
+  viewScale: number;
   onUpdate: (op: EditOp) => void;
+  onDelete: () => void;
 };
 
-function TextOverlayAnnot({ op, dims, onUpdate }: Readonly<TextOverlayAnnotProps>) {
+function TextOverlayAnnot({ op, dims, viewScale, onUpdate, onDelete }: Readonly<TextOverlayAnnotProps>) {
+  const [selected, setSelected] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const opRef = useRef(op);
+  const onUpdateRef = useRef(onUpdate);
+  opRef.current = op;
+  onUpdateRef.current = onUpdate;
+
   const [cx, cy, cw, ch] = op.coverRect;
   const pos = pdfToCss(cx, cy, cw, ch, dims);
+  const fontSizePx = op.fontSize * (dims.widthPx / dims.widthPt);
+  const pdfSX = dims.widthPx / dims.widthPt;
+  const pdfSY = dims.heightPx / dims.heightPt;
+
+  // On mount: focus + select all
+  useEffect(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    el.textContent = op.text;
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+    setSelected(true);
+  }, []); // intentional: run once on mount only
+
+  useEffect(() => {
+    if (!selected) return;
+    const handler = (e: globalThis.MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) setSelected(false);
+    };
+    window.addEventListener('mousedown', handler);
+    return () => window.removeEventListener('mousedown', handler);
+  }, [selected]);
+
+  // Drag to reposition
+  const dragRef = useRef({ active: false, startX: 0, startY: 0, origCx: 0, origCy: 0, origX: 0, origY: 0 });
+  const startDrag = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setSelected(true);
+    const cur = opRef.current;
+    dragRef.current = { active: true, startX: e.clientX, startY: e.clientY, origCx: cur.coverRect[0], origCy: cur.coverRect[1], origX: cur.x, origY: cur.y };
+    const onMove = (me: MouseEvent) => {
+      const dx = (me.clientX - dragRef.current.startX) / (viewScale * pdfSX);
+      const dy = (me.clientY - dragRef.current.startY) / (viewScale * pdfSY);
+      const c = opRef.current;
+      onUpdateRef.current({
+        ...c,
+        coverRect: [dragRef.current.origCx + dx, dragRef.current.origCy - dy, c.coverRect[2], c.coverRect[3]],
+        x: dragRef.current.origX + dx,
+        y: dragRef.current.origY - dy,
+      });
+    };
+    const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [viewScale, pdfSX, pdfSY]);
+
+  // Resize width
+  const startResizeW = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const origW = opRef.current.coverRect[2];
+    const startX = e.clientX;
+    const onMove = (me: MouseEvent) => {
+      const dx = (me.clientX - startX) / (viewScale * pdfSX);
+      const c = opRef.current;
+      onUpdateRef.current({ ...c, coverRect: [c.coverRect[0], c.coverRect[1], Math.max(20 / pdfSX, origW + dx), c.coverRect[3]] });
+    };
+    const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [viewScale, pdfSX]);
+
+  const textColor = op.color ? `rgb(${op.color.map((c) => Math.round(c * 255)).join(',')})` : 'black';
+
   return (
     <div
-      className="absolute pointer-events-auto bg-white border border-slate-300 rounded"
-      style={{ left: pos.left, top: pos.top, width: pos.width, height: pos.height }}
+      ref={containerRef}
+      className="absolute pointer-events-auto bg-white"
+      style={{
+        left: pos.left,
+        top: pos.top,
+        width: pos.width,
+        height: pos.height,
+        outline: selected ? '2px solid rgb(99,102,241)' : 'none',
+        outlineOffset: '1px',
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
     >
-      <input
-        className="w-full h-full bg-transparent text-slate-900 px-1 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
-        style={{ fontSize: op.fontSize }}
-        value={op.text}
-        onChange={(e) => onUpdate({ ...op, text: e.target.value })}
+      {/* Drag handle above */}
+      {selected && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 -top-5 h-4 px-2 flex items-center justify-center z-10 cursor-grab active:cursor-grabbing opacity-70 hover:opacity-100 bg-white rounded border border-slate-200 shadow-sm"
+          onMouseDown={startDrag}
+          title="Déplacer"
+        >
+          <GripHorizontal size={12} className="text-slate-500 pointer-events-none" />
+        </div>
+      )}
+
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        className="absolute inset-0 focus:outline-none overflow-hidden"
+        style={{
+          fontSize: fontSizePx,
+          fontWeight: op.bold ? 'bold' : 'normal',
+          fontStyle: op.italic ? 'italic' : 'normal',
+          color: textColor,
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+          cursor: 'text',
+        }}
+        onInput={(e) => onUpdate({ ...op, text: (e.currentTarget as HTMLElement).textContent ?? '' })}
+        onFocus={() => setSelected(true)}
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setSelected(false); } e.stopPropagation(); }}
       />
+
+      {/* Resize width handle */}
+      <div
+        className={`absolute top-0 bottom-0 -right-1 w-2 cursor-ew-resize ${selected ? 'opacity-100 bg-indigo-200' : 'opacity-0'}`}
+        style={{ borderRadius: '0 4px 4px 0' }}
+        onMouseDown={startResizeW}
+      />
+
+      {selected && (
+        <>
+          <button
+            className="absolute -top-2.5 -left-2.5 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors z-20"
+            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={() => setSelected(false)}
+            title="Valider"
+          >
+            <Check size={11} strokeWidth={3} />
+          </button>
+          <button
+            className="absolute -top-2.5 -right-2.5 w-5 h-5 bg-slate-700 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-500 transition-colors z-20 leading-none"
+            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={onDelete}
+          >
+            ×
+          </button>
+        </>
+      )}
     </div>
   );
 }

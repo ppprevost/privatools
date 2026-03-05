@@ -2,6 +2,7 @@
 import ToolLayout from '../layouts/ToolLayout.astro';
 import EditPdf from '../components/tools/EditPdf';
 import FeatureItem from '../components/ui/FeatureItem.astro';
+import DropZoneSkeleton from '../components/ui/DropZoneSkeleton.astro';
 
 const faqItems = [
   { question: 'Is my PDF uploaded to a server?', answer: 'No. All editing happens in your browser using WebAssembly. Your file never leaves your device.' },
@@ -20,6 +21,7 @@ const faqItems = [
   faqItems={faqItems}
   toolSlug="edit-pdf"
 >
+  <DropZoneSkeleton />
   <EditPdf client:only="react" />
 
   <section class="mt-16 space-y-12 text-left" slot="seo-content">
